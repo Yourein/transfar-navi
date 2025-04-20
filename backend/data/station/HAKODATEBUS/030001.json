@@ -1,0 +1,8 @@
+{
+  "station_id": "HAKODATEBUS_030001",
+  "name": "函館空港",
+  "join": [
+    "AP_RJCH"
+  ],
+  "pronounce": "はこだてくうこう"
+}

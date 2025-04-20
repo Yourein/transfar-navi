@@ -1,0 +1,9 @@
+{
+  "station_id": "HAKODATETB_0018",
+  "name": "五稜郭公園前",
+  "join": [
+    "HAKODATEBUS_030016",
+    "HAKODATEBUS_030017"
+  ],
+  "pronounce": "ごりょうかくこうえんまえ"
+}

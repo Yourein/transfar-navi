@@ -1,0 +1,9 @@
+{
+  "station_id": "test_010003",
+  "name": "test03",
+  "join": [
+    "test_010002",
+    "AP_RJCH"
+  ],
+  "pronounce": ""
+}

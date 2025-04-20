@@ -1,0 +1,8 @@
+{
+  "station_id": "test_010002",
+  "name": "test02",
+  "join": [
+    "test_010003"
+  ],
+  "pronounce": "てすと ぜろに"
+}
