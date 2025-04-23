@@ -1,0 +1,16 @@
+{
+    "calendar_id": "test_calendar",
+    "monday": "0001",
+    "tuesday": "0002",
+    "wednesday": "0003",
+    "thursday": "0004",
+    "friday": "0005",
+    "saturday": "0006",
+    "sunday": "0007",
+    "exception": [
+        {
+            "date": "2025/04/22",
+            "pattern_id": "0008"
+        }
+    ]
+}

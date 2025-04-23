@@ -1,0 +1,10 @@
+{
+    "pattern_id": "test",
+    "departures": [
+        {
+            "ride_id": "ride_id",
+            "trip_id": "trip_id",
+            "time": "00:00"
+        }
+    ]
+}

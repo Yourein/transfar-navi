@@ -1,0 +1,17 @@
+{
+    "station_id": "test_station",
+    "versions": [
+        {
+            "calendar_id": "test_calendar_1",
+            "valid_until": "2025/04/01"
+        },
+        {
+            "calendar_id": "test_calendar_2",
+            "valid_until": "2025/04/20"
+        },
+        {
+            "calendar_id": "test_calendar_3",
+            "valid_until": "2025/04/25"
+        }
+    ]
+}

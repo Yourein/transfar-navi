@@ -1,0 +1,109 @@
+pub const ROOT_PATH: &str = "/home/yourein/Codes/transfar-navi/backend/data";
+
+#[allow(dead_code)]
+pub trait ID {
+    fn new(raw_id: String) -> Self;
+    fn get_id_path_list(&self) -> Vec<String>;
+    fn get_root_path(&self) -> String;
+    fn get_data_type_path(&self) -> &'static str;
+    
+    fn build_path(&self) -> String {
+        self.get_root_path() + "/" + self.get_data_type_path() + "/" + &self.get_id_path_list().join("/") + ".json"
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct DeparturePatternId {
+    id: String,
+    data_root_path: String,
+}
+
+impl ID for DeparturePatternId {
+    fn new(raw_id: String) -> Self {
+        DeparturePatternId { id: raw_id, data_root_path: ROOT_PATH.to_string() }
+    }
+
+    fn get_id_path_list(&self) -> Vec<String> {
+        self.id.split("_").map(|x| x.to_string()).collect()
+    }
+
+    fn get_root_path(&self) -> String {
+        self.data_root_path.clone()
+    }
+
+    fn get_data_type_path(&self) -> &'static str {
+        "departure-pattern"
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct RideId {
+    id: String,
+    data_root_path: String
+}
+
+impl ID for RideId {
+    fn new(id: String) -> Self {
+        RideId { id, data_root_path: ROOT_PATH.to_string() }
+    }
+
+    fn get_id_path_list(&self) -> Vec<String> {
+        self.id.split("_").map(|x| x.to_string()).collect()
+    }
+
+    fn get_root_path(&self) -> String {
+        self.data_root_path.clone()
+    }
+    
+    fn get_data_type_path(&self) -> &'static str {
+        "ride"
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct CalendarId {
+    id: String,
+    data_root_path: String
+}
+
+impl ID for CalendarId {
+    fn new(id: String) -> Self {
+        CalendarId { id, data_root_path: ROOT_PATH.to_string() }
+    }
+
+    fn get_id_path_list(&self) -> Vec<String> {
+        self.id.split("_").map(|x| x.to_string()).collect()
+    }
+
+    fn get_root_path(&self) -> String {
+        self.data_root_path.clone()
+    }
+    
+    fn get_data_type_path(&self) -> &'static str {
+        "calendar"
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct StationId {
+    id: String,
+    data_root_path: String
+}
+
+impl ID for StationId {
+    fn new(id: String) -> Self {
+        StationId { id, data_root_path: ROOT_PATH.to_string() }
+    }
+
+    fn get_id_path_list(&self) -> Vec<String> {
+        self.id.split("_").map(|x| x.to_string()).collect()
+    }
+
+    fn get_root_path(&self) -> String {
+        self.data_root_path.clone()
+    }
+    
+    fn get_data_type_path(&self) -> &'static str {
+        "station"
+    }
+}
