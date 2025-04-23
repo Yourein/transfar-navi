@@ -1,6 +1,8 @@
+use std::{error::Error, fs::File, io::BufReader};
+
 use serde::Deserialize;
 use chrono::NaiveDate;
-use crate::id::{CalendarId, ID};
+use crate::id::{CalendarId, StationId, ID};
 
 #[derive(Debug, PartialEq)]
 pub struct TimeTable {
@@ -9,7 +11,8 @@ pub struct TimeTable {
 }
 
 impl TimeTable {
-    pub fn from_raw(raw: RawTimetable) -> Result<Self, chrono::ParseError> {
+    #[allow(dead_code)]
+    pub(crate) fn from_raw(raw: RawTimetable) -> Result<Self, chrono::ParseError> {
         let versions = raw
             .versions
             .into_iter()
@@ -22,6 +25,17 @@ impl TimeTable {
         })
     }
 
+    #[allow(dead_code)]
+    pub fn from_station_id(id: StationId) -> Result<Self, Box<dyn Error + Sync + Send + 'static>> {
+        let path = id.to_timetable_id().build_path();
+        let f = File::open(path)?;
+        let reader = BufReader::new(f);
+        let raw: RawTimetable = serde_json::from_reader(reader)?;
+
+        Ok(Self::from_raw(raw)?)
+    }
+
+    #[allow(dead_code)]
     pub fn get_valid_calendar(&self, date: NaiveDate) -> Option<CalendarVersion> {
         let first_valid_version = self.versions
             .iter()
@@ -49,13 +63,13 @@ impl CalendarVersion {
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
-pub struct RawTimetable {
+pub(crate) struct RawTimetable {
     station_id: String,
     pub versions: Vec<RawVersion>
 }
 
 #[derive(Deserialize, Debug, Clone, PartialEq)]
-pub struct RawVersion {
+pub(crate) struct RawVersion {
     pub calendar_id: String,
     pub valid_until: String
 }

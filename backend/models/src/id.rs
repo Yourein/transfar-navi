@@ -90,6 +90,12 @@ pub struct StationId {
     data_root_path: String
 }
 
+impl StationId {
+    pub fn to_timetable_id(&self) -> TimeTableId {
+        TimeTableId::new(self.id.clone())
+    }
+}
+
 impl ID for StationId {
     fn new(id: String) -> Self {
         StationId { id, data_root_path: ROOT_PATH.to_string() }
@@ -105,5 +111,29 @@ impl ID for StationId {
     
     fn get_data_type_path(&self) -> &'static str {
         "station"
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct TimeTableId {
+    id: String,
+    data_root_path: String
+}
+
+impl ID for TimeTableId {
+    fn new(id: String) -> Self {
+        TimeTableId { id, data_root_path: ROOT_PATH.to_string() }
+    }
+
+    fn get_id_path_list(&self) -> Vec<String> {
+        self.id.split("_").map(|x| x.to_string()).collect()
+    }
+
+    fn get_root_path(&self) -> String {
+        self.data_root_path.clone()
+    }
+    
+    fn get_data_type_path(&self) -> &'static str {
+        "timetable"
     }
 }

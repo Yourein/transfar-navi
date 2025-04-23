@@ -1,6 +1,8 @@
+use std::{error::Error, fs::File, io::BufReader};
+
 use serde::Deserialize;
 use chrono::{Datelike, NaiveDate, Weekday};
-use crate::id::{DeparturePatternId, ID};
+use crate::id::{CalendarId, DeparturePatternId, ID};
 
 // fixme: 曜日とかexceptionのpattern_idの型をstringじゃなくてちゃんとしたwrapperにしたい。
 
@@ -19,7 +21,7 @@ pub struct Calendar {
 
 impl Calendar {
     #[allow(dead_code)]
-    pub fn from_raw(raw: RawCalendar) -> Result<Self, chrono::ParseError> {
+    pub(crate) fn from_raw(raw: RawCalendar) -> Result<Self, chrono::ParseError> {
         let exceptions: Result<Vec<CalendarException>, chrono::ParseError> = raw.exception
                 .iter()
                 .map(|x| CalendarException::from_raw(x))
@@ -47,6 +49,16 @@ impl Calendar {
     }
 
     #[allow(dead_code)]
+    pub fn from_id(calendar_id: CalendarId) -> Result<Self, Box<dyn Error + Send + Sync + 'static>> {
+        let path = calendar_id.build_path();
+        let f = File::open(path)?;
+        let reader = BufReader::new(f);
+        let raw: RawCalendar = serde_json::from_reader(reader)?;
+
+        Ok(Self::from_raw(raw)?)
+    }
+
+    #[allow(dead_code)]
     pub fn get_pattern_id(&self, date: NaiveDate) -> DeparturePatternId {
         let exception = self.exception.iter().find(|x| x.date == date);
         if exception.is_some() {
@@ -67,7 +79,7 @@ impl Calendar {
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
-pub struct RawCalendar {
+pub(crate) struct RawCalendar {
     pub calendar_id: String,
     pub monday: String,
     pub tuesday: String,
@@ -80,7 +92,7 @@ pub struct RawCalendar {
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
-pub struct RawCalendarException {
+pub(crate) struct RawCalendarException {
     pub date: String,
     pub pattern_id: String
 }

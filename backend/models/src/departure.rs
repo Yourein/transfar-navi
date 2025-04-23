@@ -1,3 +1,5 @@
+use std::{error::Error, fs::File, io::BufReader};
+
 use serde::Deserialize;
 use chrono::NaiveTime;
 
@@ -10,7 +12,8 @@ pub struct DeparturePattern {
 }
 
 impl DeparturePattern {
-    pub fn from_raw(raw: RawDeparturePattern) -> Result<Self, chrono::ParseError> {
+    #[allow(dead_code)]
+    pub(crate) fn from_raw(raw: RawDeparturePattern) -> Result<Self, chrono::ParseError> {
         let departures = raw.departures
             .into_iter()
             .map(Departure::from_raw)
@@ -20,6 +23,16 @@ impl DeparturePattern {
             pattern_id: DeparturePatternId::new(raw.pattern_id),
             departures,
         })
+    }
+
+    #[allow(dead_code)]
+    pub fn from_id(id: DeparturePatternId) -> Result<Self, Box<dyn Error + Send + Sync + 'static>> {
+        let path = id.build_path();
+        let f = File::open(path)?;
+        let reader = BufReader::new(f);
+        let raw: RawDeparturePattern = serde_json::from_reader(reader)?;
+        
+        Ok(DeparturePattern::from_raw(raw)?)
     }
 }
 
@@ -32,7 +45,7 @@ pub struct Departure {
 }
 
 impl Departure {
-    pub fn from_raw(raw: RawDeparture) -> Result<Self, chrono::ParseError> {
+    pub(crate) fn from_raw(raw: RawDeparture) -> Result<Self, chrono::ParseError> {
         let time = NaiveTime::parse_from_str(&raw.time, "%H:%M")?;
         Ok(Departure {
             ride_id: RideId::new(raw.ride_id),
@@ -43,13 +56,13 @@ impl Departure {
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
-pub struct RawDeparturePattern {
+pub(crate) struct RawDeparturePattern {
     pub pattern_id: String,
     pub departures: Vec<RawDeparture>
 }
 
 #[derive(Deserialize, Debug, PartialEq, Clone)]
-pub struct RawDeparture {
+pub(crate) struct RawDeparture {
     pub ride_id: String,
     pub trip_id: String,
     pub time: String
