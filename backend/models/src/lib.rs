@@ -4,10 +4,13 @@ mod calendar;
 mod id;
 mod timetable;
 mod transfar;
+//mod response;
+mod ride;
 
 #[cfg(test)]
 mod tests {
     use crate::id::{CalendarId, DeparturePatternId, RideId, StationId, ID, ROOT_PATH};
+    use crate::ride::{RawRide, Ride};
     use crate::station::{RawStation, Station};
     use crate::departure::{Departure, DeparturePattern, RawDeparture, RawDeparturePattern};
     use crate::calendar::{Calendar, CalendarException, RawCalendar, RawCalendarException};
@@ -25,6 +28,7 @@ mod tests {
         let expected = RawStation {
             station_id: "test_station".to_string(),
             name: "TestStation".to_string(),
+            pronounce: "てすと".to_string(),
             join: [
                 "test_station_02".to_string()
             ].to_vec()
@@ -41,6 +45,7 @@ mod tests {
         let expected = Station {
             station_id: StationId::new("test_station".to_string()),
             name: "TestStation".to_string(),
+            pronounce: "てすと".to_string(),
             join: [
                 StationId::new("test_station_02".to_string())
             ].to_vec()
@@ -213,5 +218,31 @@ mod tests {
         let expected3: Option<CalendarVersion> = None;
 
         assert_eq!([actual1, actual2, actual3], [expected1, expected2, expected3]);
+    }
+
+    #[test]
+    fn can_parse_ride() {
+        let f = File::open("/home/yourein/Codes/transfar-navi/backend/models/test_data/55G-D.json").unwrap();
+        let reader = BufReader::new(f);
+        let raw: RawRide = serde_json::from_reader(reader).unwrap();
+        let actual = Ride::from_raw(raw);
+
+        let expected = Ride {
+            ride_type: "55G".to_string(),
+            aka_type: "".to_string(),
+            type_foreground: "#FFD700".to_string(),
+            type_background: "#000000".to_string(),
+            type_pronounce: "ごじゅうご じーけいとう".to_string(),
+            to: StationId::new("HAKODATEBUS_050019".to_string()),
+            career_type: "BUS".to_string(),
+            route: vec![
+                StationId::new("HAKODATEBUS_050004".to_string()),
+                StationId::new("HAKODATEBUS_050005".to_string()),
+                StationId::new("HAKODATEBUS_050016".to_string()),
+                StationId::new("HAKODATEBUS_050019".to_string())
+            ]
+        };
+
+        assert_eq!(expected, actual);
     }
 }

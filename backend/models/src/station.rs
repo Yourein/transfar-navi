@@ -8,6 +8,7 @@ use crate::id::{StationId, ID};
 pub struct Station {
     pub(crate) station_id: StationId,
     pub name: String,
+    pub pronounce: String,
     pub join: Vec<StationId>
 }
 
@@ -17,6 +18,7 @@ impl Station {
         Self {
             station_id: StationId::new(raw.station_id.clone()),
             name: raw.name,
+            pronounce: raw.pronounce,
             join: raw.join.iter().map(|x| StationId::new(x.clone())).collect()
         }
     }
@@ -38,5 +40,6 @@ impl Station {
 pub struct RawStation {
     pub station_id: String,
     pub name: String,
+    pub pronounce: String,
     pub join: Vec<String>
 }

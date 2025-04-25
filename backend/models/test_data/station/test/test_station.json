@@ -1,6 +1,7 @@
 {
     "station_id": "test_station",
     "name": "TestStation",
+    "pronounce": "てすと",
     "join": [
         "test_station_02"
     ]
