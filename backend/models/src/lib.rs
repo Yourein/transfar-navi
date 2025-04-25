@@ -1,11 +1,11 @@
-mod station;
-mod departure;
-mod calendar;
-mod id;
-mod timetable;
-mod transfar;
-//mod response;
-mod ride;
+pub mod station;
+pub mod departure;
+pub mod calendar;
+pub mod id;
+pub mod timetable;
+pub mod transfar;
+pub mod response;
+pub mod ride;
 
 #[cfg(test)]
 mod tests {

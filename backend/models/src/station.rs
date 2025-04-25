@@ -1,4 +1,4 @@
-use std::{error::Error, fs::File, io::BufReader};
+use std::{error::Error, fs::File, io::BufReader, path::Path};
 
 use serde::Deserialize;
 
@@ -6,7 +6,7 @@ use crate::id::{StationId, ID};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Station {
-    pub(crate) station_id: StationId,
+    pub station_id: StationId,
     pub name: String,
     pub pronounce: String,
     pub join: Vec<StationId>
@@ -31,6 +31,12 @@ impl Station {
         let raw: RawStation = serde_json::from_reader(reader)?;
 
         Ok(Station::from_raw(raw))
+    }
+
+    #[allow(dead_code)]
+    pub fn is_valid(&self) -> bool {
+        let timetable_path = self.station_id.to_timetable_id().build_path();
+        Path::new(&timetable_path).exists()
     }
 }
 
