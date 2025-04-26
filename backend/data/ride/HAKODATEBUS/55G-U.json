@@ -1,0 +1,29 @@
+{
+    "ride_id": "HAKODATEBUS_55G-U",
+    "type": "55G",
+    "aka_type": "",
+    "type_foreground": "#FFD700",
+    "type_background": "#000000",
+    "type_pronounce": "ごじゅうご じーけいとう",
+    "to": "HAKODATEBUS_050003",
+    "career_type": "BUS",
+    "route": [
+        "HAKODATEBUS_050019",
+        "HAKODATEBUS_050018",
+        "HAKODATEBUS_050017",
+        "HAKODATEBUS_050016",
+        "HAKODATEBUS_050015",
+        "HAKODATEBUS_050014",
+        "HAKODATEBUS_050013",
+        "HAKODATEBUS_050012",
+        "HAKODATEBUS_050011",
+        "HAKODATEBUS_050010",
+        "HAKODATEBUS_050009",
+        "HAKODATEBUS_050008",
+        "HAKODATEBUS_050007",
+        "HAKODATEBUS_050006",
+        "HAKODATEBUS_050005",
+        "HAKODATEBUS_050004",
+        "HAKODATEBUS_050003"
+    ]
+}
