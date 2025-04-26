@@ -1,0 +1,9 @@
+{
+  "station_id": "HAKODATEBUS_020010",
+  "name": "函館駅前",
+  "join": [
+    "HAKODATETB_0010",
+    "JRH_H75"
+  ],
+  "pronounce": "はこだてえきまえ"
+}

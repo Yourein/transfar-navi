@@ -1,6 +1,6 @@
 {
   "station_id": "JRH_H75",
   "name": "函館",
-  "join": ["HAKODATETB_0010"],
+  "join": ["HAKODATETB_0010", "HAKODATEBUS_020010"],
   "pronounce": "はこだて"
 }
