@@ -92,7 +92,7 @@ pub(crate) struct RawCalendar {
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
-pub(crate) struct RawCalendarException {
+pub struct RawCalendarException {
     pub date: String,
     pub pattern_id: String
 }
