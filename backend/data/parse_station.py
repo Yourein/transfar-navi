@@ -34,6 +34,8 @@ def csv_to_json(csv_file_path: str, output_root: str = "./station"):
 
             # JSONファイルとして出力
             output_path = os.path.join(dir_path, filename)
+            if os.path.exists(output_path):
+                continue
             print(output_path, json_data)
             with open(output_path, 'w', encoding='utf-8') as jsonfile:
                 json.dump(json_data, jsonfile, ensure_ascii=False, indent=2)
@@ -41,5 +43,5 @@ def csv_to_json(csv_file_path: str, output_root: str = "./station"):
 
 # 使用例
 if __name__ == "__main__":
-    csv_to_json("./original/station_jrh.csv")
+    csv_to_json("./original/station_hakodate_bus_03.csv")
 
