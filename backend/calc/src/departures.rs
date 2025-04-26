@@ -56,7 +56,7 @@ pub fn get_departures(raw_station_id: &str, datetime: DateTime<FixedOffset>) -> 
             },
             career_type: ride.career_type,
             depart_at: departure.time.format("%H:%M").to_string(),
-            transfars: vec![vec![]]
+            transfars: vec![]
         });
     }
     
