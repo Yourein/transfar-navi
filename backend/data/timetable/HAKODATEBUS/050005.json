@@ -2,7 +2,7 @@
     "station_id": "HAKODATEBUS_050005",
     "versions": [
         {
-            "calendar": "HAKODATEBUS_050005_0001",
+            "calendar_id": "HAKODATEBUS_050005_0001",
             "valid_until": "2025/10/01"
         }
     ]
