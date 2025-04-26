@@ -35,6 +35,7 @@ departure {
     "type_pronounce": String,
     "to": station,
     "career_type": String, // String Enum
+    "depart_at": String,
     "transfars": [[transfar]]
 }
 
@@ -45,6 +46,6 @@ transfar {
     "to": station,
     "career_type": String,
     "depart_at": String, // NaiveTime
-    "wait_in_minutes": Int
+    "transfar_time": u32
 }
 ```

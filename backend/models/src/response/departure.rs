@@ -11,5 +11,6 @@ pub struct ResDeparture {
     pub type_pronounce: String,
     pub to: ResStation,
     pub career_type: String,
+    pub depart_at: String,
     pub transfars: Vec<Vec<ResTransfar>>
 }
