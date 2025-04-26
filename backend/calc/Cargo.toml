@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 models = { path = "../models" }
+chrono.workspace = true
