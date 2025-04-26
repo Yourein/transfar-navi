@@ -20,4 +20,31 @@ station {
 
 ## GET departures/\{station_id\}
 
-station_id: String → ?
+station_id: String → departures
+
+```json
+departures {
+    "departures": [departure]
+}
+
+departure {
+    "ride_type": String,
+    "aka_type": Option<String>,
+    "type_foreground": String,
+    "type_background": String,
+    "type_pronounce": String,
+    "to": station,
+    "career_type": String, // String Enum
+    "transfars": [[transfar]]
+}
+
+transfar {
+    "ride_type": String,
+    "type_foreground": String,
+    "type_background": String,
+    "to": station,
+    "career_type": String,
+    "depart_at": String, // NaiveTime
+    "wait_in_minutes": Int
+}
+```
