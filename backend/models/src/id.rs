@@ -6,6 +6,7 @@ pub trait ID {
     fn get_id_path_list(&self) -> Vec<String>;
     fn get_root_path(&self) -> String;
     fn get_data_type_path(&self) -> &'static str;
+    fn get_raw_id(&self) -> String;
     
     fn build_path(&self) -> String {
         self.get_root_path() + "/" + self.get_data_type_path() + "/" + &self.get_id_path_list().join("/") + ".json"
@@ -31,6 +32,10 @@ impl ID for DeparturePatternId {
         self.data_root_path.clone()
     }
 
+    fn get_raw_id(&self) -> String {
+        self.id.clone()
+    }
+
     fn get_data_type_path(&self) -> &'static str {
         "departure-pattern"
     }
@@ -53,6 +58,10 @@ impl ID for RideId {
 
     fn get_root_path(&self) -> String {
         self.data_root_path.clone()
+    }
+
+    fn get_raw_id(&self) -> String {
+        self.id.clone()
     }
     
     fn get_data_type_path(&self) -> &'static str {
@@ -77,6 +86,10 @@ impl ID for CalendarId {
 
     fn get_root_path(&self) -> String {
         self.data_root_path.clone()
+    }
+
+    fn get_raw_id(&self) -> String {
+        self.id.clone()
     }
     
     fn get_data_type_path(&self) -> &'static str {
@@ -108,6 +121,10 @@ impl ID for StationId {
     fn get_root_path(&self) -> String {
         self.data_root_path.clone()
     }
+
+    fn get_raw_id(&self) -> String {
+        self.id.clone()
+    }
     
     fn get_data_type_path(&self) -> &'static str {
         "station"
@@ -131,6 +148,10 @@ impl ID for TimeTableId {
 
     fn get_root_path(&self) -> String {
         self.data_root_path.clone()
+    }
+
+    fn get_raw_id(&self) -> String {
+        self.id.clone()
     }
     
     fn get_data_type_path(&self) -> &'static str {

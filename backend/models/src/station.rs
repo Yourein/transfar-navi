@@ -1,7 +1,5 @@
 use std::{error::Error, fs::File, io::BufReader, path::Path};
-
 use serde::Deserialize;
-
 use crate::id::{StationId, ID};
 
 #[derive(Debug, Clone, PartialEq)]
