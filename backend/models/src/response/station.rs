@@ -2,7 +2,7 @@ use serde::Serialize;
 use std::convert::From;
 use crate::{id::ID, station::Station};
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone, PartialEq)]
 pub struct ResStation {
     pub id: String,
     pub name: String,
