@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 actix-web.workspace = true
+models = { path = "../models" }
+calc = { path = "../calc" }

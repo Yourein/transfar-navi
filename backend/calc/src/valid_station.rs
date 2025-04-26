@@ -6,7 +6,7 @@ use models::id::ID;
 use models::station::Station;
 
 #[allow(dead_code)]
-fn get_valid_stations(path: &PathBuf) -> Result<Vec<Station>, Box<dyn Error + Send + Sync + 'static>> {
+pub fn get_valid_stations(path: &PathBuf) -> Result<Vec<Station>, Box<dyn Error + Send + Sync + 'static>> {
     let mut valid_stations = Vec::new();
 
     if path.is_dir() {
