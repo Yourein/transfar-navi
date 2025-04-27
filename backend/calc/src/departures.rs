@@ -24,7 +24,8 @@ pub fn get_departures(raw_station_id: &str, datetime: DateTime<FixedOffset>) -> 
     };
 
     let pattern_id = Calendar::from_id(calendar.calendar_id)?.get_pattern_id(date);
-    let departure_pattern = DeparturePattern::from_id(pattern_id)?;
+    let mut departure_pattern = DeparturePattern::from_id(pattern_id)?;
+    departure_pattern.departures.sort_by(|x, y| x.time.cmp(&y.time));
     
     let mut res_departures: Vec<ResDeparture> = Vec::new();
     let mut ride_cache: HashMap<String, Ride> = HashMap::new();
