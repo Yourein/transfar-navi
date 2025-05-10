@@ -5,6 +5,7 @@ members = [
     "app",
     "calc",
     "models",
+    "repositories",
 ]
 
 [workspace.dependencies]

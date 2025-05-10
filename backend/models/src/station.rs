@@ -11,6 +11,7 @@ pub struct Station {
 }
 
 impl Station {
+    #[deprecated(note="use StationRepository::from_raw instead")]
     #[allow(dead_code)]
     pub fn from_raw(raw: RawStation) -> Self {
         Self {
@@ -21,6 +22,7 @@ impl Station {
         }
     }
 
+    #[deprecated(note="use StationRepository::from_id instead")]
     #[allow(dead_code)]
     pub fn from_id(id: StationId) -> Result<Self, Box<dyn Error + Send + Sync + 'static>> {
         let path = id.build_path();
@@ -31,6 +33,7 @@ impl Station {
         Ok(Station::from_raw(raw))
     }
 
+    #[deprecated(note="use StationRepository::check_is_valid instead")]
     #[allow(dead_code)]
     pub fn is_valid(&self) -> bool {
         let timetable_path = self.station_id.to_timetable_id().build_path();
