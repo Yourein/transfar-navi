@@ -66,7 +66,8 @@ mod tests {
                 RawDeparture {
                     ride_id: "ride_id".to_string(),
                     trip_id: "trip_id".to_string(),
-                    time: "00:00".to_string()
+                    time: "00:00".to_string(),
+                    loop_count: None,
                 }
             ].to_vec()
         };
@@ -160,7 +161,8 @@ mod tests {
                 Departure {
                     ride_id: RideId::new("ride_id".to_string()),
                     trip_id: "trip_id".to_string(),
-                    time: NaiveTime::from_hms_opt(00, 00, 00).expect("Valid Time")
+                    time: NaiveTime::from_hms_opt(00, 00, 00).expect("Valid Time"),
+                    loop_count: None,
                 }
             ].to_vec()
         };

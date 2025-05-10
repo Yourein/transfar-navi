@@ -42,6 +42,7 @@ pub struct Departure {
     pub ride_id: RideId,
     pub trip_id: String,
     pub time: NaiveTime,
+    pub loop_count: Option<i32>,
 }
 
 impl Departure {
@@ -50,7 +51,8 @@ impl Departure {
         Ok(Departure {
             ride_id: RideId::new(raw.ride_id),
             trip_id: raw.trip_id,
-            time: time
+            time: time,
+            loop_count: raw.loop_count,
         })
     }
 }
@@ -65,5 +67,6 @@ pub(crate) struct RawDeparturePattern {
 pub(crate) struct RawDeparture {
     pub ride_id: String,
     pub trip_id: String,
-    pub time: String
+    pub time: String,
+    pub loop_count: Option<i32>,
 }
