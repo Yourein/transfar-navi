@@ -8,6 +8,7 @@ pub mod response;
 pub mod ride;
 
 #[cfg(test)]
+#[allow(non_snake_case)]
 mod tests {
     use crate::id::{CalendarId, DeparturePatternId, RideId, StationId, ID, ROOT_PATH};
     use crate::ride::{RawRide, Ride};
@@ -244,5 +245,69 @@ mod tests {
         };
 
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn ループ回数と補助情報付きのStationIdから正しくidやループ回数が取得できる() {
+        let id = StationId {
+            id: "TAGENCY_0001-D~2".to_string(),
+            data_root_path: "/hoge/fuga".to_string(),
+        };
+
+        let actual_raw_id = id.get_raw_id();
+        let expected_raw_id = "TAGENCY_0001-D".to_string();
+        assert_eq!(expected_raw_id, actual_raw_id);
+
+        let actual_loop_count = id.get_loop_count();
+        let expected_loop_count = 2;
+        assert_eq!(expected_loop_count, actual_loop_count);
+    }
+
+    #[test]
+    fn ループ回数のみがついたStationidから正しくidやループ回数が取得できる() {
+        let id = StationId {
+            id: "TAGENCY_0001~2".to_string(),
+            data_root_path: "/hoge/fuga".to_string(),
+        };
+
+        let actual_raw_id = id.get_raw_id();
+        let expected_raw_id = "TAGENCY_0001".to_string();
+        assert_eq!(expected_raw_id, actual_raw_id);
+
+        let actual_loop_count = id.get_loop_count();
+        let expected_loop_count = 2;
+        assert_eq!(expected_loop_count, actual_loop_count);
+    }
+
+    #[test]
+    fn 補助情報のみのStationIdから正しくidやループ回数が取得できる() {
+        let id = StationId {
+            id: "TAGENCY_0001-1".to_string(),
+            data_root_path: "/hoge/fuga".to_string(),
+        };
+
+        let actual_raw_id = id.get_raw_id();
+        let expected_raw_id = "TAGENCY_0001-1".to_string();
+        assert_eq!(expected_raw_id, actual_raw_id);
+
+        let actual_loop_count = id.get_loop_count();
+        let expected_loop_count = 1;
+        assert_eq!(expected_loop_count, actual_loop_count);
+    }
+
+    #[test]
+    fn ループ回数も補助情報もないStationIdから正しくidやループ回数が取得できる() {
+        let id = StationId {
+            id: "TAGENCY_0001".to_string(),
+            data_root_path: "/hoge/fuga".to_string(),
+        };
+
+        let actual_raw_id = id.get_raw_id();
+        let expected_raw_id = "TAGENCY_0001".to_string();
+        assert_eq!(expected_raw_id, actual_raw_id);
+
+        let actual_loop_count = id.get_loop_count();
+        let expected_loop_count = 1;
+        assert_eq!(expected_loop_count, actual_loop_count);
     }
 }

@@ -99,13 +99,27 @@ impl ID for CalendarId {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct StationId {
-    id: String,
-    data_root_path: String
+    pub(crate) id: String,
+    pub(crate) data_root_path: String
 }
 
 impl StationId {
     pub fn to_timetable_id(&self) -> TimeTableId {
         TimeTableId::new(self.id.clone())
+    }
+
+    fn split_additional_info(&self) -> Vec<String> {
+        self.id.clone().split("~").map(|x| x.to_string()).collect()
+    }
+
+    pub fn get_loop_count(&self) -> i32 {
+        let id_data = self.split_additional_info();
+        if id_data.len() >= 2 {
+            id_data[1].parse::<i32>().unwrap_or_else(|_| 1)
+        }
+        else {
+            1
+        }
     }
 }
 
@@ -115,7 +129,7 @@ impl ID for StationId {
     }
 
     fn get_id_path_list(&self) -> Vec<String> {
-        self.id.split("_").map(|x| x.to_string()).collect()
+        self.get_raw_id().split("_").map(|x| x.to_string()).collect()
     }
 
     fn get_root_path(&self) -> String {
@@ -123,7 +137,7 @@ impl ID for StationId {
     }
 
     fn get_raw_id(&self) -> String {
-        self.id.clone()
+        self.split_additional_info()[0].clone()
     }
     
     fn get_data_type_path(&self) -> &'static str {
