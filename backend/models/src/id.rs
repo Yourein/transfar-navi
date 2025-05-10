@@ -121,6 +121,10 @@ impl StationId {
             1
         }
     }
+
+    pub fn is_same_station(&self, other: &StationId) -> bool {
+        self.get_raw_id() == other.get_raw_id()
+    }
 }
 
 impl ID for StationId {
