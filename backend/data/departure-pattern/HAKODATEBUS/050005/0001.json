@@ -7,6 +7,11 @@
             "time": "07:34"
         },
         {
+            "ride_id": "HAKODATEBUS_55G-D",
+            "trip_id": "HAKODATEBUS_55G-D-0756",
+            "time": "08:00"
+        },
+        {
             "ride_id": "HAKODATEBUS_7E",
             "trip_id": "HAKODATEBUS_7E-0841",
             "time": "08:41"
@@ -22,6 +27,11 @@
             "time": "10:46"
         },
         {
+            "ride_id": "HAKODATEBUS_55G-D",
+            "trip_id": "HAKODATEBUS_55G-D-1102",
+            "time": "11:06"
+        },
+        {
             "ride_id": "HAKODATEBUS_7F",
             "trip_id": "HAKODATEBUS_7F-1146",
             "time": "11:46"
@@ -32,14 +42,29 @@
             "time": "12:46"
         },
         {
+            "ride_id": "HAKODATEBUS_55G-D",
+            "trip_id": "HAKODATEBUS_55G-D-1311",
+            "time": "13:15"
+        },
+        {
             "ride_id": "HAKODATEBUS_7F",
             "trip_id": "HAKODATEBUS_7F-1346",
             "time": "13:46"
         },
         {
+            "ride_id": "HAKODATEBUS_55G-D",
+            "trip_id": "HAKODATEBUS_55G-D-1410",
+            "time": "14:14"
+        },
+        {
             "ride_id": "HAKODATEBUS_7F",
             "trip_id": "HAKODATEBUS_7F-1446",
             "time": "14:46"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-D",
+            "trip_id": "HAKODATEBUS_55G-D-1547",
+            "time": "15:51"
         },
         {
             "ride_id": "HAKODATEBUS_7F",
