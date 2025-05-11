@@ -162,7 +162,7 @@ mod tests {
                     ride_id: RideId::new("ride_id".to_string()),
                     trip_id: "trip_id".to_string(),
                     time: NaiveTime::from_hms_opt(00, 00, 00).expect("Valid Time"),
-                    loop_count: None,
+                    loop_count: 1,
                 }
             ].to_vec()
         };
