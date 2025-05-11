@@ -66,7 +66,7 @@ fn calc_stop_after(
     }
 }
 
-/// あるdeparturesよりあとのdeparturesをすべて抽出する。
+/// あるdepartures以降のdeparturesをすべて抽出する。
 /// ride_id (系統) が同じものも含めて返すことに注意。
 fn calc_depart_after(departures: Vec<Departure>, transfar_from: &Departure) -> Vec<Departure> {
     departures
@@ -74,7 +74,6 @@ fn calc_depart_after(departures: Vec<Departure>, transfar_from: &Departure) -> V
         .skip_while(|x| {
             x.trip_id != transfar_from.trip_id || x.loop_count != transfar_from.loop_count
         })
-        .skip(1)
         .map(|x| x.to_owned())
         .collect()
 }
@@ -112,10 +111,12 @@ fn find_valid_transfar(
     let mut departures = departure_pattern.departures;
     departures.sort_by_key(|x| x.time);
 
-    let depart_after = calc_depart_after(departures, transfar_from);
+    let depart_after_inclusive = calc_depart_after(departures, transfar_from);
+    let arrive = depart_after_inclusive.first().unwrap().to_owned();
 
-    depart_after
+    depart_after_inclusive
         .into_iter()
+        .skip(1)
         .filter_map(|x| {
             // fixme: ここどうにかしたい
             let Ok(target_ride) = Ride::from_id(x.ride_id.get_raw_id()) else {
@@ -123,7 +124,7 @@ fn find_valid_transfar(
             };
             calc_transfar(
                 cur_ride,
-                &transfar_from,
+                &arrive,
                 cur_station,
                 &x,
                 &target_ride,
@@ -279,12 +280,20 @@ mod test {
         let cur_ride = departures[3].clone();
         let actual_depart_after = calc_depart_after(departures, &cur_ride);
 
-        let expected_depart_after = vec![Departure {
-            ride_id: RideId::new("TargetRide".to_string()),
-            trip_id: "4".to_string(),
-            time: NaiveTime::from_hms_opt(11, 0, 0).expect("Valid hms"),
-            loop_count: 0,
-        }];
+        let expected_depart_after = vec![
+            Departure {
+                ride_id: RideId::new("TargetRide".to_string()),
+                trip_id: "3".to_string(),
+                time: NaiveTime::from_hms_opt(10, 0, 0).expect("Valid hms"),
+                loop_count: 0,
+            },
+            Departure {
+                ride_id: RideId::new("TargetRide".to_string()),
+                trip_id: "4".to_string(),
+                time: NaiveTime::from_hms_opt(11, 0, 0).expect("Valid hms"),
+                loop_count: 0,
+            }
+        ];
 
         assert_eq!(expected_depart_after, actual_depart_after);
     }
@@ -326,6 +335,12 @@ mod test {
         };
 
         let expected_depart_after: Vec<Departure> = vec![
+            Departure {
+                ride_id: RideId::new("TargetRide".to_string()),
+                trip_id: "0".to_string(),
+                time: NaiveTime::from_hms_opt(7, 0, 0).expect("Valid hms"),
+                loop_count: 1,
+            },           
             Departure {
                 ride_id: RideId::new("TargetRide".to_string()),
                 trip_id: "1".to_string(),
