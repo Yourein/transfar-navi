@@ -22,6 +22,7 @@ impl Station {
         }
     }
 
+    #[allow(deprecated)]
     #[deprecated(note="use StationRepository::from_id instead")]
     #[allow(dead_code)]
     pub fn from_id(id: StationId) -> Result<Self, Box<dyn Error + Send + Sync + 'static>> {

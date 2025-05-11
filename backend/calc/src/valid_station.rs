@@ -4,12 +4,15 @@ use std::path::{Path, PathBuf};
 use models::id::StationId;
 use models::id::ID;
 use models::station::Station;
+use repositories::impls::station_repository::StationRepositoryImpl;
+use repositories::traits::station_repository::StationRepository;
 
 #[allow(dead_code)]
 pub fn get_valid_stations(path: &PathBuf) -> Result<Vec<Station>, Box<dyn Error + Send + Sync + 'static>> {
     let mut valid_stations = Vec::new();
 
     if path.is_dir() {
+        let station_repository = StationRepositoryImpl;
         for entry in fs::read_dir(path)? {
             let entry = entry?;
             let path = entry.path();
@@ -29,10 +32,7 @@ pub fn get_valid_stations(path: &PathBuf) -> Result<Vec<Station>, Box<dyn Error 
                             .map(|x| x.strip_suffix(".json").unwrap_or_default())
                             .map(|x| StationId::new(x.replace("/", "_")));
                         if station_id.is_some() {
-                            let res = Station::from_id(station_id.unwrap());
-                            if res.is_ok() {
-                                valid_stations.push(res.unwrap());
-                            }
+                            valid_stations.push(station_repository.from_id(station_id.unwrap())?);
                         }
                     }
                 }

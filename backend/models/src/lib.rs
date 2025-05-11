@@ -37,6 +37,8 @@ mod tests {
         assert_eq!(actual, expected);
     }
 
+    // todo: このテストはrepositoriesに移す
+    #[allow(deprecated)]
     #[test]
     fn parse_station() {
         let f = File::open("/home/yourein/Codes/transfar-navi/backend/models/test_data/station/test/test_station.json").unwrap();
