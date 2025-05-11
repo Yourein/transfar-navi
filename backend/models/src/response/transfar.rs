@@ -9,5 +9,5 @@ pub struct ResTransfar {
     pub to: ResStation,
     pub career_type: String,
     pub depart_at: String, // hh:mm
-    pub transfar_time: u32
+    pub transfar_time: i64,
 }
