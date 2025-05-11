@@ -2,9 +2,9 @@ use std::{error::Error, fs::File, io::BufReader, path::Path};
 use models::{id::{StationId, ID}, station::{RawStation, Station}};
 use crate::traits;
 
-pub struct StationRepository;
+pub struct StationRepositoryImpl;
 
-impl traits::station_repository::StationRepository for StationRepository {
+impl traits::station_repository::StationRepository for StationRepositoryImpl {
     fn from_id(&self, id: models::id::StationId) -> Result<Station, Box<dyn Error + Send + Sync + 'static>> {
         let path = id.build_path();
         let f = File::open(path)?;
