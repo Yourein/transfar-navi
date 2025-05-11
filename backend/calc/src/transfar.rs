@@ -15,7 +15,6 @@ use repositories::{
     impls::station_repository::StationRepositoryImpl, traits::station_repository::StationRepository,
 };
 
-// todo: 乗り継ぎの乗り継ぎも勘定してVec<Vec<ResTransfar>>を返却するようにしている.
 pub(crate) fn calc_transfars(
     ride: &Ride,
     departure: &Departure,
