@@ -390,7 +390,10 @@ name = "calc"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "env_logger",
+ "log",
  "models",
+ "repositories",
 ]
 
 [[package]]

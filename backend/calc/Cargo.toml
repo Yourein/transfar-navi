@@ -5,4 +5,7 @@ edition = "2024"
 
 [dependencies]
 models = { path = "../models" }
+repositories = { path = "../repositories" }
 chrono.workspace = true
+env_logger.workspace = true
+log.workspace = true

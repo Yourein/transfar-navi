@@ -1,4 +1,5 @@
 use chrono::{DateTime, FixedOffset, NaiveDate, TimeDelta};
+use repositories::{impls::station_repository::StationRepositoryImpl, traits::station_repository::StationRepository};
 use std::{collections::HashMap, error::Error};
 use models::{
     calendar::Calendar,
@@ -6,14 +7,15 @@ use models::{
     id::{StationId, ID},
     response::{departure::ResDeparture, departures::ResDepartures, station::ResStation},
     ride::Ride,
-    station::Station,
     timetable::TimeTable
 };
+use crate::transfar::calc_transfars;
 
 pub fn get_departures(raw_station_id: &str, datetime: DateTime<FixedOffset>) -> Result<ResDepartures, Box<dyn Error + Send + Sync + 'static>> {
     let station_id = StationId::new(raw_station_id.to_string());
-    let root_station = Station::from_id(station_id.clone())?;
-    if root_station.is_valid() == false {
+    let station_repository = StationRepositoryImpl;
+    let root_station = station_repository.from_id(station_id.clone())?;
+    if station_repository.check_is_valid(root_station.clone()) == false {
         return Err(format!{"Timetable for {} not found.", raw_station_id}.into())
     }
 
@@ -43,7 +45,14 @@ pub fn get_departures(raw_station_id: &str, datetime: DateTime<FixedOffset>) -> 
             _ride
         };
         
-        let bound_for = Station::from_id(ride.to)?;
+        let bound_for = station_repository.from_id(ride.to.clone())?;
+        let transfars = calc_transfars(
+            &departure.trip_id,
+            &ride,
+            &departure,
+            &root_station,
+            departure.loop_count
+        );
         res_departures.push( ResDeparture {
             ride_type: ride.ride_type,
             aka_type: if ride.aka_type.is_empty() { None } else { Some(ride.aka_type) },
@@ -57,7 +66,7 @@ pub fn get_departures(raw_station_id: &str, datetime: DateTime<FixedOffset>) -> 
             },
             career_type: ride.career_type,
             depart_at: departure.time.format("%H:%M").to_string(),
-            transfars: vec![]
+            transfars: transfars,
         });
     }
     
