@@ -33,6 +33,7 @@ pub(crate) fn calc_transfars(
         .map(|cur_station| {
             find_valid_transfar(cur_station, &departure, &ride, today, &station_repository)
         })
+        .filter(|x| !x.is_empty())
         .collect()
 }
 
