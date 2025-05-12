@@ -105,7 +105,7 @@ pub struct StationId {
 
 impl StationId {
     pub fn to_timetable_id(&self) -> TimeTableId {
-        TimeTableId::new(self.id.clone())
+        TimeTableId::new(self.get_raw_id().clone())
     }
 
     fn split_additional_info(&self) -> Vec<String> {
@@ -151,8 +151,8 @@ impl ID for StationId {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TimeTableId {
-    id: String,
-    data_root_path: String
+    pub(crate) id: String,
+    pub(crate) data_root_path: String
 }
 
 impl ID for TimeTableId {

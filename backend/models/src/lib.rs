@@ -10,7 +10,7 @@ pub mod ride;
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
-    use crate::id::{CalendarId, DeparturePatternId, RideId, StationId, ID, ROOT_PATH};
+    use crate::id::{CalendarId, DeparturePatternId, RideId, StationId, TimeTableId, ID, ROOT_PATH};
     use crate::ride::{RawRide, Ride};
     use crate::station::{RawStation, Station};
     use crate::departure::{Departure, DeparturePattern, RawDeparture, RawDeparturePattern};
@@ -313,5 +313,29 @@ mod tests {
         let actual_loop_count = id.get_loop_count();
         let expected_loop_count = 1;
         assert_eq!(expected_loop_count, actual_loop_count);
+    }
+
+    #[test]
+    fn ループ回数のあるなしに限らずStationIdからTimetableIdが作れる() {
+        let id_loop = StationId {
+            id: "TEST~1".to_string(),
+            data_root_path: "/hoge/fuga".to_string(),
+        };
+        let id_no_loop = StationId {
+            id: "TEST".to_string(),
+            data_root_path: "/hoge/fuga".to_string()
+        };
+        let actual_loop = id_loop.to_timetable_id();
+        let actual_no_loop = id_no_loop.to_timetable_id();
+        let expected_loop = TimeTableId {
+            id: "TEST".to_string(),
+            data_root_path: "/home/yourein/Codes/transfar-navi/backend/data".to_string(),
+        };
+        let expected_no_loop = TimeTableId {
+            id: "TEST".to_string(),
+            data_root_path: "/home/yourein/Codes/transfar-navi/backend/data".to_string(),
+        };
+        assert_eq!(actual_loop, expected_loop);
+        assert_eq!(actual_no_loop, expected_no_loop);
     }
 }
