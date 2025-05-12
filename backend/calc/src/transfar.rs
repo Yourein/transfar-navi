@@ -15,13 +15,12 @@ use repositories::{
     impls::station_repository::StationRepositoryImpl, traits::station_repository::StationRepository,
 };
 
-/// ある便の可能な乗り換えをすべて列挙する
 pub(crate) fn calc_transfars(
     ride: &Ride,
     departure: &Departure,
     start: &Station,
     station_loop_count: i32,
-) -> Vec<Vec<Vec<ResTransfar>>> {
+) -> Vec<Vec<ResTransfar>> {
     let route: Vec<StationId> =
         calc_stop_after(ride.route.clone(), &start.station_id, station_loop_count)
             .into_iter()
@@ -79,14 +78,13 @@ fn calc_depart_after(departures: Vec<Departure>, transfar_from: &Departure) -> V
         .collect()
 }
 
-/// ある駅で可能な乗り換えをすべて列挙する
 fn find_valid_transfar(
     cur_station: &StationId,
     transfar_from: &Departure,
     cur_ride: &Ride,
     today: NaiveDate, // todo: naivedate zl current datetime.
     station_repository: &dyn StationRepository,
-) -> Vec<Vec<ResTransfar>> {
+) -> Vec<ResTransfar> {
     let Ok(timetable) = TimeTable::from_station_id(cur_station.clone()) else {
         debug!(
             "Timetable for station {:?} not found.",
@@ -116,7 +114,6 @@ fn find_valid_transfar(
     let depart_after_inclusive = calc_depart_after(departures, transfar_from);
     let arrive = depart_after_inclusive.first().unwrap().to_owned();
 
-    // todo: 再帰的に探索するようにする
     depart_after_inclusive
         .into_iter()
         .skip(1)
@@ -135,8 +132,7 @@ fn find_valid_transfar(
             )
             .ok()
         })
-        .map(|x| vec![x])
-        .collect::<Vec<Vec<ResTransfar>>>()
+        .collect::<Vec<ResTransfar>>()
 }
 
 /// 2つのdepartureを対象にtransfar_fromからtarget_departureに乗り継ぐことが有効化を判定する
@@ -150,9 +146,6 @@ fn calc_transfar(
     target_ride: &Ride,
     station_repository: &dyn StationRepository,
 ) -> Result<ResTransfar, Box<dyn Error + Send + Sync + 'static>> {
-    // todo: 再帰的な探索をするためにcur_ride → cur_routeに変えたほうが良さそう
-    //       そうすると前に通った道をはぶけるので
-
     // 認められた乗り換え
     // - 全く行き先が違うやつ
     // - 戻らない
