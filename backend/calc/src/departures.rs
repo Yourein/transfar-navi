@@ -50,7 +50,8 @@ pub fn get_departures(raw_station_id: &str, datetime: DateTime<FixedOffset>) -> 
             &ride,
             &departure,
             &root_station,
-            departure.loop_count
+            departure.loop_count,
+            datetime
         );
         res_departures.push( ResDeparture {
             ride_type: ride.ride_type,

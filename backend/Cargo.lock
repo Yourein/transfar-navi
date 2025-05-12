@@ -299,6 +299,8 @@ dependencies = [
  "env_logger",
  "log",
  "models",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -394,6 +396,8 @@ dependencies = [
  "log",
  "models",
  "repositories",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

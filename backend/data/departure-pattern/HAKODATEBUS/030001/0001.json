@@ -1,0 +1,11 @@
+{
+    "pattern_id": "HAKODATEBUS_030001_0001",
+    "departures": [
+        {
+            "ride_id": "HAKODATEBUS_7F",
+            "trip_id": "HAKODATEBUS_7F-1146",
+            "time": "11:47",
+            "loop_count": 2
+        }
+    ]
+}

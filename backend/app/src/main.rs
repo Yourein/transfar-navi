@@ -2,7 +2,7 @@ mod common;
 mod v1;
 
 use actix_web::{App, HttpServer, middleware::Logger};
-use v1::departures::get_departures_by_station_id;
+use v1::departures::{get_departures_by_station_id};
 use crate::v1::available_stations::available_stations;
 use crate::v1::health::v1_health;
 
@@ -23,6 +23,7 @@ async fn main() -> std::io::Result<()> {
             .service(v1_health)
             .service(available_stations)
             .service(get_departures_by_station_id)
+            // .service(deb)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

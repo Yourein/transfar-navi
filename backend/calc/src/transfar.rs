@@ -1,12 +1,10 @@
-use std::error::Error;
-
-use chrono::NaiveDate;
+use chrono::{DateTime, FixedOffset, NaiveDate, NaiveTime};
 use log::debug;
 use models::{
     calendar::Calendar,
     departure::{Departure, DeparturePattern},
-    id::{ID, StationId},
-    response::transfar::ResTransfar,
+    id::{StationId, ID},
+    response::{station::ResStation, transfar::ResTransfar},
     ride::Ride,
     station::Station,
     timetable::TimeTable,
@@ -14,27 +12,50 @@ use models::{
 use repositories::{
     impls::station_repository::StationRepositoryImpl, traits::station_repository::StationRepository,
 };
+use std::collections::{self, HashSet, VecDeque};
+use std::error::Error;
+
+use crate::valid_station;
+
+#[derive(Clone)]
+pub struct TransfarChain {
+    pub departure: Departure,
+    pub ride_at: StationId,
+    pub transfar_time: i64,
+}
 
 pub(crate) fn calc_transfars(
     ride: &Ride,
     departure: &Departure,
     start: &Station,
     station_loop_count: i32,
+    datetime: DateTime<FixedOffset>,
 ) -> Vec<Vec<ResTransfar>> {
-    let route: Vec<StationId> =
-        calc_stop_after(ride.route.clone(), &start.station_id, station_loop_count)
-            .into_iter()
-            .skip_while(|x| x.is_same_station(&start.station_id))
-            .collect();
-    let today = NaiveDate::from_ymd_opt(2025, 05, 11).expect("valid ymd");
     let station_repository = StationRepositoryImpl;
-    route
-        .iter()
-        .map(|cur_station| {
-            find_valid_transfar(cur_station, &departure, &ride, today, &station_repository)
-        })
-        .filter(|x| !x.is_empty())
-        .collect()
+    let chains = build_departure_path(&start.station_id, &departure, datetime);
+    let mut res: Vec<Vec<ResTransfar>> = Vec::new();
+    for chain in chains {
+        let res_chain: Vec<ResTransfar> = chain
+            .iter()
+            .map(|x| {
+                let ride = Ride::from_id(x.departure.ride_id.get_raw_id()).unwrap();
+                let to: ResStation = station_repository.from_id(ride.to).unwrap().into();
+                let at: ResStation = station_repository.from_id(x.ride_at.clone()).unwrap().into();
+                ResTransfar {
+                    ride_type: ride.ride_type.clone(),
+                    type_foreground: ride.type_foreground.clone(),
+                    type_background: ride.type_background.clone(),
+                    to: to,
+                    career_type: ride.career_type.clone(),
+                    depart_at: x.departure.time.format("%H:%M").to_string(),
+                    at: at,
+                    transfar_time: x.transfar_time
+                }
+            })
+            .collect::<_>();
+        res.push(res_chain);
+    }
+    res
 }
 
 /// ある駅よりあとの停車駅を抽出する
@@ -66,10 +87,15 @@ fn calc_stop_after(
     }
 }
 
-/// あるdepartures以降のdeparturesをすべて抽出する。
+/// 有効かは置いておいてあるdepartures以降のdeparturesをすべてVec<Departures>から抽出する。
 /// ride_id (系統) が同じものも含めて返すことに注意。
-fn calc_depart_after(departures: Vec<Departure>, transfar_from: &Departure) -> Vec<Departure> {
-    departures
+fn get_transfarable_departures(
+    departures: Vec<Departure>,
+    transfar_from: &Departure,
+) -> Vec<Departure> {
+    let mut sorted = departures.clone();
+    sorted.sort_by(|x, y| x.time.cmp(&y.time));
+    sorted
         .iter()
         .skip_while(|x| {
             x.trip_id != transfar_from.trip_id || x.loop_count != transfar_from.loop_count
@@ -78,69 +104,160 @@ fn calc_depart_after(departures: Vec<Departure>, transfar_from: &Departure) -> V
         .collect()
 }
 
+fn get_departure_pattern_from_station_id(
+    id: &StationId,
+    today: NaiveDate,
+) -> Result<DeparturePattern, Box<dyn Error + Sync + Send + 'static>> {
+    let timetable = TimeTable::from_station_id(id.clone())?;
+    let current_calendar = timetable
+        .get_valid_calendar(today)
+        .ok_or("There are no valid calendar version.")?;
+    let calendar_res = Calendar::from_id(current_calendar.calendar_id)?;
+    let pattern_id = calendar_res.get_pattern_id(today);
+
+    DeparturePattern::from_id(pattern_id)
+}
+
+pub fn build_departure_path(
+    root_station: &StationId,
+    root_departure: &Departure,
+    datetime: DateTime<FixedOffset>,
+) -> Vec<Vec<TransfarChain>> {
+    let today = datetime.date_naive();
+    let Ok(root_departure_pattern) = get_departure_pattern_from_station_id(root_station, today)
+    else {
+        return vec![];
+    };
+
+    let mut stack: VecDeque<Vec<TransfarChain>> = VecDeque::new();
+    let mut res: Vec<Vec<TransfarChain>> = Vec::new();
+    // {
+    //     let mut type_memo: HashSet<String> = HashSet::new();
+    //     root_departure_pattern
+    //         .departures
+    //         .clone()
+    //         .into_iter()
+    //         .filter(|x| x.time >= datetime.time())
+    //         .filter_map(|x| {
+    //             if type_memo.insert(x.ride_id.get_raw_id()) {
+    //                 Some(vec![ TransfarChain{ departure: x, ride_at: root_station.clone(), transfar_time: 0 }])
+    //             } else {
+    //                 None
+    //             }
+    //         })
+    //         .for_each(|x| stack.push_back(x));
+    // }
+    stack.push_back(vec![TransfarChain{ departure: root_departure.clone(), ride_at: root_station.clone(), transfar_time: 0 }]);
+    while let Some(top) = stack.pop_back() {
+        if top.len() > 3 {
+            continue;
+        }
+        if top.len() > 1 {
+            res.push(top.clone());
+        }
+        let last = top.last().unwrap().to_owned();
+        let back = last.departure;
+        let Ok(ride) = Ride::from_id(back.ride_id.get_raw_id()) else {
+            continue;
+        };
+        let stop_after = calc_stop_after(ride.route, &last.ride_at, last.ride_at.get_loop_count())
+            .into_iter()
+            .skip(1)
+            .collect::<Vec<_>>();
+        for station in stop_after {
+            let Ok(pattern) = get_departure_pattern_from_station_id(&station, today) else {
+                continue;
+            };
+            let Some(arrive) = pattern.departures.iter().find(|x| x.trip_id == back.trip_id && x.time >= back.time) else {
+                continue;
+            };
+            let depart_after_inc = get_transfarable_departures(pattern.departures.clone(), &arrive);
+            let depart_after = depart_after_inc.clone().into_iter().skip(1).collect::<Vec<_>>();
+            let mut transfar_memo: HashSet<String> = HashSet::new();
+            for target in depart_after {
+                // todo: ここでvalidateする必要がある
+                let mut next = top.clone();
+                if target.ride_id != arrive.ride_id && !transfar_memo.contains(&target.ride_id.get_raw_id()) {
+                    transfar_memo.insert(target.ride_id.get_raw_id().clone());
+                    next.push( TransfarChain { departure: target.clone(), ride_at: station.clone(), transfar_time: (target.time-arrive.time).num_minutes() });
+                    stack.push_back(next);
+                }
+            }
+        }
+    }
+    res
+}
+
 fn find_valid_transfar(
     cur_station: &StationId,
     transfar_from: &Departure,
-    cur_ride: &Ride,
+    // cur_ride: &Ride,
     today: NaiveDate, // todo: naivedate zl current datetime.
     station_repository: &dyn StationRepository,
-) -> Vec<ResTransfar> {
-    let Ok(timetable) = TimeTable::from_station_id(cur_station.clone()) else {
-        debug!(
-            "Timetable for station {:?} not found.",
-            cur_station.get_raw_id()
-        );
+) -> Vec<Vec<ResTransfar>> {
+    let departure_pattern = get_departure_pattern_from_station_id(cur_station, today.clone());
+    if departure_pattern.is_err() {
         return vec![];
-    };
-    let Some(current_calendar) = timetable.get_valid_calendar(today) else {
-        debug!(
-            "No valid calendar found in timetable {:?}, date: {:?}",
-            cur_station.get_raw_id(),
-            today
-        );
-        return vec![];
-    };
-    let Ok(calendar_res) = Calendar::from_id(current_calendar.calendar_id) else {
-        return vec![];
-    };
-    let pattern_id = calendar_res.get_pattern_id(today);
-    let Ok(departure_pattern) = DeparturePattern::from_id(pattern_id) else {
-        return vec![];
-    };
-
-    let mut departures = departure_pattern.departures;
+    }
+    let mut departures = departure_pattern.unwrap().departures;
     departures.sort_by_key(|x| x.time);
 
-    let depart_after_inclusive = calc_depart_after(departures, transfar_from);
+    let depart_after_inclusive = get_transfarable_departures(departures, transfar_from);
     let arrive = depart_after_inclusive.first().unwrap().to_owned();
 
-    depart_after_inclusive
-        .into_iter()
-        .skip(1)
-        .filter_map(|x| {
-            // fixme: ここどうにかしたい
-            let Ok(target_ride) = Ride::from_id(x.ride_id.get_raw_id()) else {
-                return None;
-            };
-            calc_transfar(
-                cur_ride,
-                &arrive,
-                cur_station,
-                &x,
-                &target_ride,
-                station_repository,
-            )
-            .ok()
-        })
-        .collect::<Vec<ResTransfar>>()
+    for departure in depart_after_inclusive {
+        // let transfar_route
+    }
+
+    // depart_after_inclusive
+    //     .into_iter()
+    //     .skip(1)
+    //     .filter_map(|x| {
+    //         // fixme: ここどうにかしたい
+    //         let Ok(target_ride) = Ride::from_id(x.ride_id.get_raw_id()) else {
+    //             return None;
+    //         };
+    //         calc_transfar(
+    //             cur_ride,
+    //             &arrive,
+    //             cur_station,
+    //             &x,
+    //             &target_ride,
+    //             station_repository,
+    //         )
+    //         .ok()
+    //     })
+    //     .map(|x| vec![x])
+    //     .collect::<_>()
+    todo!()
+}
+
+fn is_valid_transfar(
+    trip_route: Vec<StationId>,
+    target_departure: &Departure,
+    target_ride: &Ride,
+    transfar_at: &StationId,
+) -> Result<StationId, Box<dyn Error + Send + Sync + 'static>> {
+    let target_route = target_ride.route.clone();
+    let valid_destinations: Vec<StationId> =
+        calc_stop_after(target_route, transfar_at, target_departure.loop_count)
+            .into_iter()
+            .skip_while(|x| x.is_same_station(&transfar_at))
+            .take_while(|x| trip_route.iter().find(|y| y.is_same_station(x)) == None)
+            .collect();
+
+    if valid_destinations.is_empty() {
+        return Err("Invalid.".into());
+    }
+    Ok(valid_destinations.last().unwrap().to_owned())
 }
 
 /// 2つのdepartureを対象にtransfar_fromからtarget_departureに乗り継ぐことが有効化を判定する
 /// 無効な乗り換えの場合はErrが返る。
 /// 0分乗り換えは許容しているので、フロント側で出さないようにするか、警告文を出すなどで対応する。
 fn calc_transfar(
-    cur_ride: &Ride,
-    transfar_from: &Departure,
+    trip_route: Vec<StationId>,
+    arrival_time: &NaiveTime,
     transfar_at: &StationId,
     target_departure: &Departure,
     target_ride: &Ride,
@@ -151,23 +268,12 @@ fn calc_transfar(
     // - 戻らない
     // - 行き先は同じだけれども今の便が通らない駅に停まるやつ
     //   - ただし、次に合流する前の駅に向かうことにする
+    let transfar_to = is_valid_transfar(trip_route, target_departure, target_ride, transfar_at)?.to_owned();
 
-    let route = cur_ride.route.clone();
-    let target_route = target_ride.route.clone();
-    let valid_destinations: Vec<StationId> =
-        calc_stop_after(target_route, transfar_at, target_departure.loop_count)
-            .into_iter()
-            .skip_while(|x| x.is_same_station(&transfar_at))
-            .take_while(|x| route.iter().find(|y| y.is_same_station(x)) == None)
-            .collect();
-
-    if valid_destinations.is_empty() {
-        return Err("There are no valid transfars.".into());
-    }
-
-    let transfar_to_id = valid_destinations.last().unwrap().to_owned();
-    let transfar_to = station_repository.from_id(transfar_to_id)?;
-    let transfar_time = (target_departure.time - transfar_from.time).num_minutes();
+    let transfar_station = station_repository.from_id(transfar_at.clone())?;
+    // let transfar_to_id = valid_destinations.last().unwrap().to_owned();
+    let transfar_to = station_repository.from_id(transfar_to)?;
+    let transfar_time = (target_departure.time - arrival_time.to_owned()).num_minutes();
     if transfar_time < 0 {
         return Err("There are no time to change.".into());
     }
@@ -175,6 +281,7 @@ fn calc_transfar(
         ride_type: target_ride.ride_type.clone(),
         type_foreground: target_ride.type_foreground.clone(),
         type_background: target_ride.type_background.clone(),
+        at: transfar_station.into(),
         to: transfar_to.into(),
         career_type: target_ride.career_type.clone(),
         depart_at: target_departure.time.format("%H:%M").to_string(),
@@ -185,7 +292,7 @@ fn calc_transfar(
 #[allow(non_snake_case)]
 #[cfg(test)]
 mod test {
-    use super::{calc_depart_after, calc_stop_after, calc_transfar};
+    use super::{calc_stop_after, calc_transfar, get_transfarable_departures};
     use chrono::NaiveTime;
     use models::departure::Departure;
     use models::id::{ID, RideId, StationId};
@@ -278,7 +385,7 @@ mod test {
             })
             .collect();
         let cur_ride = departures[3].clone();
-        let actual_depart_after = calc_depart_after(departures, &cur_ride);
+        let actual_depart_after = get_transfarable_departures(departures, &cur_ride);
 
         let expected_depart_after = vec![
             Departure {
@@ -292,7 +399,7 @@ mod test {
                 trip_id: "4".to_string(),
                 time: NaiveTime::from_hms_opt(11, 0, 0).expect("Valid hms"),
                 loop_count: 0,
-            }
+            },
         ];
 
         assert_eq!(expected_depart_after, actual_depart_after);
@@ -340,7 +447,7 @@ mod test {
                 trip_id: "0".to_string(),
                 time: NaiveTime::from_hms_opt(7, 0, 0).expect("Valid hms"),
                 loop_count: 1,
-            },           
+            },
             Departure {
                 ride_id: RideId::new("TargetRide".to_string()),
                 trip_id: "1".to_string(),
@@ -355,7 +462,7 @@ mod test {
             },
         ];
 
-        let actual_depart_after = calc_depart_after(departures, &cur_departure);
+        let actual_depart_after = get_transfarable_departures(departures, &cur_departure);
         assert_eq!(expected_depart_after, actual_depart_after);
     }
 
@@ -376,7 +483,7 @@ mod test {
             time: NaiveTime::from_hms_opt(7, 0, 0).expect("Valid hms"),
             loop_count: 1,
         };
-        let actual = calc_depart_after(departures, &transfar_from);
+        let actual = get_transfarable_departures(departures, &transfar_from);
         let expected: Vec<Departure> = Vec::new();
         assert_eq!(expected, actual);
     }
@@ -384,12 +491,6 @@ mod test {
     #[test]
     fn valid_transfar_ナイーブなケース() {
         let cur_station = StationId::new("03".to_string());
-        let transfar_from = Departure {
-            ride_id: RideId::new("A".to_string()),
-            trip_id: "A".to_string(),
-            time: NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
-            loop_count: 1,
-        };
         let cur_ride = dummy_ride(
             StationId::new("04".to_string()),
             vec![
@@ -417,8 +518,8 @@ mod test {
 
         let station_repository = DevelopmentStationRepository::new(|_| vec![]);
         let actual = calc_transfar(
-            &cur_ride,
-            &transfar_from,
+            cur_ride.route.clone(),
+            &NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
             &cur_station,
             &target_departure,
             &target_ride,
@@ -429,6 +530,7 @@ mod test {
             ride_type: "".to_string(),
             type_foreground: "".to_string(),
             type_background: "".to_string(),
+            at: station_repository.from_id(cur_station).unwrap().into(),
             to: station_repository
                 .from_id(StationId::new("07".to_string()))
                 .unwrap()
@@ -443,12 +545,6 @@ mod test {
     #[test]
     fn calc_transfar_invalid_戻るケース() {
         let cur_station = StationId::new("02".to_string());
-        let transfar_from = Departure {
-            ride_id: RideId::new("A".to_string()),
-            trip_id: "A".to_string(),
-            time: NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
-            loop_count: 1,
-        };
         let cur_ride = dummy_ride(
             StationId::new("03".to_string()),
             vec![
@@ -474,8 +570,8 @@ mod test {
 
         let station_repository = DevelopmentStationRepository::new(|_| vec![]);
         let actual = calc_transfar(
-            &cur_ride,
-            &transfar_from,
+            cur_ride.route.clone(),
+            &NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
             &cur_station,
             &target_departure,
             &target_ride,
@@ -487,12 +583,6 @@ mod test {
     #[test]
     fn calc_transfar_valid_合流するけど別ルートなケース() {
         let cur_station = StationId::new("02".to_string());
-        let transfar_from = Departure {
-            ride_id: RideId::new("A".to_string()),
-            trip_id: "A".to_string(),
-            time: NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
-            loop_count: 1,
-        };
         let cur_ride = dummy_ride(
             StationId::new("03".to_string()),
             vec![
@@ -520,8 +610,8 @@ mod test {
 
         let station_repository = DevelopmentStationRepository::new(|_| vec![]);
         let actual = calc_transfar(
-            &cur_ride,
-            &transfar_from,
+            cur_ride.route.clone(),
+            &NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
             &cur_station,
             &target_departure,
             &target_ride,
@@ -532,6 +622,7 @@ mod test {
             ride_type: "".to_string(),
             type_foreground: "".to_string(),
             type_background: "".to_string(),
+            at: station_repository.from_id(cur_station).unwrap().into(),
             to: station_repository
                 .from_id(StationId::new("06".to_string()))
                 .unwrap()
@@ -546,12 +637,6 @@ mod test {
     #[test]
     fn calc_transfar_invalid_相手側が終点なケース() {
         let cur_station = StationId::new("02".to_string());
-        let transfar_from = Departure {
-            ride_id: RideId::new("A".to_string()),
-            trip_id: "A".to_string(),
-            time: NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
-            loop_count: 1,
-        };
         let cur_ride = dummy_ride(
             StationId::new("03".to_string()),
             vec![
@@ -576,8 +661,8 @@ mod test {
 
         let station_repository = DevelopmentStationRepository::new(|_| vec![]);
         let actual = calc_transfar(
-            &cur_ride,
-            &transfar_from,
+            cur_ride.route.clone(),
+            &NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
             &cur_station,
             &target_departure,
             &target_ride,
@@ -589,12 +674,6 @@ mod test {
     #[test]
     fn calc_transfar_invalid_並走区間() {
         let cur_station = StationId::new("02".to_string());
-        let transfar_from = Departure {
-            ride_id: RideId::new("A".to_string()),
-            trip_id: "A".to_string(),
-            time: NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
-            loop_count: 1,
-        };
         let cur_ride = dummy_ride(
             StationId::new("03".to_string()),
             vec![
@@ -623,8 +702,8 @@ mod test {
 
         let station_repository = DevelopmentStationRepository::new(|_| vec![]);
         let actual = calc_transfar(
-            &cur_ride,
-            &transfar_from,
+            cur_ride.route.clone(),
+            &NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
             &cur_station,
             &target_departure,
             &target_ride,
@@ -636,12 +715,6 @@ mod test {
     #[test]
     fn calc_transfar_valid_相手側が始点なケース() {
         let cur_station = StationId::new("02".to_string());
-        let transfar_from = Departure {
-            ride_id: RideId::new("A".to_string()),
-            trip_id: "A".to_string(),
-            time: NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
-            loop_count: 1,
-        };
         let cur_ride = dummy_ride(
             StationId::new("03".to_string()),
             vec![
@@ -666,8 +739,8 @@ mod test {
 
         let station_repository = DevelopmentStationRepository::new(|_| vec![]);
         let actual = calc_transfar(
-            &cur_ride,
-            &transfar_from,
+            cur_ride.route.clone(),
+            &NaiveTime::from_hms_opt(12, 0, 0).expect("valid hms"),
             &cur_station,
             &target_departure,
             &target_ride,
@@ -678,6 +751,7 @@ mod test {
             ride_type: "".to_string(),
             type_foreground: "".to_string(),
             type_background: "".to_string(),
+            at: station_repository.from_id(cur_station).unwrap().into(),
             to: station_repository
                 .from_id(StationId::new("04".to_string()))
                 .unwrap()
