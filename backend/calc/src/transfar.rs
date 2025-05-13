@@ -12,10 +12,8 @@ use models::{
 use repositories::{
     impls::station_repository::StationRepositoryImpl, traits::station_repository::StationRepository,
 };
-use std::collections::{self, HashSet, VecDeque};
+use std::collections::{HashSet, VecDeque};
 use std::error::Error;
-
-use crate::valid_station;
 
 #[derive(Clone)]
 pub struct TransfarChain {
@@ -60,7 +58,7 @@ pub(crate) fn calc_transfars(
 
 /// ある駅よりあとの停車駅を抽出する
 /// 形式的にはsplitで右側に寄せる
-/// [1, 2, 3, 4, 2, 5]でstart=2のとき[[1], [2, 3, 4], [2, 5]]になる
+/// \[1, 2, 3, 4, 2, 5\]でstart=2のとき\[\[1\], \[2, 3, 4\], \[2, 5\]\]になる
 fn calc_stop_after(
     route: Vec<StationId>,
     start: &StationId,
@@ -124,43 +122,36 @@ pub fn build_departure_path(
     datetime: DateTime<FixedOffset>,
 ) -> Vec<Vec<TransfarChain>> {
     let today = datetime.date_naive();
-    let Ok(root_departure_pattern) = get_departure_pattern_from_station_id(root_station, today)
-    else {
-        return vec![];
-    };
-
     let mut stack: VecDeque<Vec<TransfarChain>> = VecDeque::new();
     let mut res: Vec<Vec<TransfarChain>> = Vec::new();
-    // {
-    //     let mut type_memo: HashSet<String> = HashSet::new();
-    //     root_departure_pattern
-    //         .departures
-    //         .clone()
-    //         .into_iter()
-    //         .filter(|x| x.time >= datetime.time())
-    //         .filter_map(|x| {
-    //             if type_memo.insert(x.ride_id.get_raw_id()) {
-    //                 Some(vec![ TransfarChain{ departure: x, ride_at: root_station.clone(), transfar_time: 0 }])
-    //             } else {
-    //                 None
-    //             }
-    //         })
-    //         .for_each(|x| stack.push_back(x));
-    // }
-    stack.push_back(vec![TransfarChain{ departure: root_departure.clone(), ride_at: root_station.clone(), transfar_time: 0 }]);
-    while let Some(top) = stack.pop_back() {
-        if top.len() > 3 {
+    // 初期状態 (乗り換え検索の最初の駅であるdepartureに乗車した状態) をpush
+    stack.push_back(
+        vec![
+            TransfarChain{ 
+                departure: root_departure.clone(),
+                ride_at: root_station.clone(),
+                transfar_time: 0,
+            }
+        ]
+    );
+    while let Some(chain) = stack.pop_back() {
+        // 計算時間の都合で最大3回までの乗り換えを検索する。
+        if chain.len() > 3 {
             continue;
         }
-        if top.len() > 1 {
-            res.push(top.clone());
+
+        // 初めの1要素は最初に乗った便なので一回以上乗り換えしていたら返り値に含める
+        if chain.len() > 1 {
+            res.push(chain.clone());
         }
-        let last = top.last().unwrap().to_owned();
-        let back = last.departure;
-        let Ok(ride) = Ride::from_id(back.ride_id.get_raw_id()) else {
+
+        let transfar_from = chain.last().unwrap().to_owned();
+        let Ok(ride) = Ride::from_id(transfar_from.departure.ride_id.get_raw_id()) else {
             continue;
         };
-        let stop_after = calc_stop_after(ride.route, &last.ride_at, last.ride_at.get_loop_count())
+
+        // 次駅以降を対象にに乗り換え可能駅と乗り換えを探す
+        let stop_after = calc_stop_after(ride.route, &transfar_from.ride_at, transfar_from.ride_at.get_loop_count())
             .into_iter()
             .skip(1)
             .collect::<Vec<_>>();
@@ -168,15 +159,22 @@ pub fn build_departure_path(
             let Ok(pattern) = get_departure_pattern_from_station_id(&station, today) else {
                 continue;
             };
-            let Some(arrive) = pattern.departures.iter().find(|x| x.trip_id == back.trip_id && x.time >= back.time) else {
-                continue;
-            };
+            
+            // 今乗っている便が到着するときのdepartureを探す
+            let Some(arrive) = pattern
+                .departures
+                .iter()
+                .find(|x| {
+                    x.trip_id == transfar_from.departure.trip_id && x.time >= transfar_from.departure.time
+                }) else {
+                    continue;
+                };
             let depart_after_inc = get_transfarable_departures(pattern.departures.clone(), &arrive);
             let depart_after = depart_after_inc.clone().into_iter().skip(1).collect::<Vec<_>>();
             let mut transfar_memo: HashSet<String> = HashSet::new();
             for target in depart_after {
                 // todo: ここでvalidateする必要がある
-                let mut next = top.clone();
+                let mut next = chain.clone();
                 if target.ride_id != arrive.ride_id && !transfar_memo.contains(&target.ride_id.get_raw_id()) {
                     transfar_memo.insert(target.ride_id.get_raw_id().clone());
                     next.push( TransfarChain { departure: target.clone(), ride_at: station.clone(), transfar_time: (target.time-arrive.time).num_minutes() });
