@@ -30,7 +30,8 @@ pub(crate) fn calc_transfars(
     let station_repository = StationRepositoryImpl;
     let chains = build_departure_path(&start.station_id, &departure, datetime);
     let mut res: Vec<Vec<ResTransfar>> = Vec::new();
-    for chain in chains {
+    // DFSの関係上乗り換えに時間がかかるやつから出てくるのでここで逆順にする
+    for chain in chains.into_iter().rev() {
         let res_chain: Vec<ResTransfar> = chain
             .iter()
             .map(|x| {
@@ -167,14 +168,15 @@ pub fn build_departure_path(
                 }) else {
                     continue;
                 };
-            let depart_after_inc = get_transfarable_departures(pattern.departures.clone(), &arrive);
-            let depart_after = depart_after_inc.clone().into_iter().skip(1).collect::<Vec<_>>();
-            let mut transfar_memo: HashSet<String> = HashSet::new();
-            for target in depart_after {
+            let depart_after = get_transfarable_departures(pattern.departures.clone(), &arrive);
+            let mut ride_id_memo: HashSet<String> = HashSet::new();
+
+            // 自分の出発情報を先頭に含むので1つskipする
+            for target in depart_after.into_iter().skip(1) {
                 // todo: ここでvalidateする必要がある
                 let mut next = chain.clone();
-                if target.ride_id != arrive.ride_id && !transfar_memo.contains(&target.ride_id.get_raw_id()) {
-                    transfar_memo.insert(target.ride_id.get_raw_id().clone());
+                if target.ride_id != arrive.ride_id && !ride_id_memo.contains(&target.ride_id.get_raw_id()) {
+                    ride_id_memo.insert(target.ride_id.get_raw_id().clone());
                     next.push( TransfarChain { departure: target.clone(), ride_at: station.clone(), transfar_time: (target.time-arrive.time).num_minutes() });
                     stack.push_back(next);
                 }
