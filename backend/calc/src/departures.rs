@@ -47,10 +47,8 @@ pub fn get_departures(raw_station_id: &str, datetime: DateTime<FixedOffset>) -> 
         
         let bound_for = station_repository.from_id(ride.to.clone())?;
         let transfars = calc_transfars(
-            &ride,
             &departure,
             &root_station,
-            departure.loop_count,
             datetime
         );
         res_departures.push( ResDeparture {

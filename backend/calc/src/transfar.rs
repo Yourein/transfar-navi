@@ -23,10 +23,8 @@ pub struct TransfarChain {
 }
 
 pub(crate) fn calc_transfars(
-    ride: &Ride,
     departure: &Departure,
     start: &Station,
-    station_loop_count: i32,
     datetime: DateTime<FixedOffset>,
 ) -> Vec<Vec<ResTransfar>> {
     let station_repository = StationRepositoryImpl;
