@@ -1,0 +1,14 @@
+{
+    "ride_id": "JAL_2742",
+    "type": "JAL 2742",
+    "aka_type": "",
+    "type_foreground": "#F0F0F0",
+    "type_background": "#C91412",
+    "type_pronounce": "にほんこうくう にせんななひゃくよんじゅうに びん",
+    "to": "AP_RJCO",
+    "career_type": "AIRPLANE",
+    "route": [
+        "AP_RJCH",
+        "AP_RJCO"
+    ]
+}

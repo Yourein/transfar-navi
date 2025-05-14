@@ -1,0 +1,9 @@
+{
+    "station_id": "AP_RJCO",
+    "versions": [
+        {
+            "calendar_id": "AP_RJCO_0001",
+            "valid_until": "2025/10/01"
+        }
+    ]
+}

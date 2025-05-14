@@ -2,10 +2,81 @@
     "pattern_id": "HAKODATEBUS_030001_0001",
     "departures": [
         {
+            "ride_id": "HAKODATEBUS_7B",
+            "trip_id": "HAKODATEBUS_7B-0803",
+            "time": "08:38",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_7B",
+            "trip_id": "HAKODATEBUS_7B-0905",
+            "time": "09:39",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_7B",
+            "trip_id": "HAKODATEBUS_7B-1006",
+            "time": "10:40",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_7B",
+            "trip_id": "HAKODATEBUS_7B-1106",
+            "time": "11:40",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_7A",
+            "trip_id": "HAKODATEBUS_7A-1314",
+            "time": "13:48",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_7B",
+            "trip_id": "HAKODATEBUS_7B-1425",
+            "time": "14:59",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_7B",
+            "trip_id": "HAKODATEBUS_7B-1531",
+            "time": "16:05",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_7B",
+            "trip_id": "HAKODATEBUS_7B-1610",
+            "time": "16:44",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_7A",
+            "trip_id": "HAKODATEBUS_7A-1730",
+            "time": "18:04",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_7A",
+            "trip_id": "HAKODATEBUS_7A-1857",
+            "time": "18:57",
+            "loop_count": 2,
+            "departure_type": "incoming"
+        },
+        {
             "ride_id": "HAKODATEBUS_7F",
             "trip_id": "HAKODATEBUS_7F-1146",
             "time": "11:47",
-            "loop_count": 2
+            "loop_count": 2,
+            "departure_type": "incoming"
         }
     ]
 }

@@ -1,0 +1,23 @@
+{
+    "pattern_id": "AP_RJCH_0001",
+    "departures": [
+        {
+            "ride_id": "JAL_2742",
+            "trip_id": "JAL_2742",
+            "time": "9:25",
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "JAL_2748",
+            "trip_id": "JAL_2748",
+            "time": "14:40",
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "JAL_2752",
+            "trip_id": "JAL_2752",
+            "time": "17:10",
+            "departure_type": "incoming"
+        }
+    ]
+}
