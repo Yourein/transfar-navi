@@ -1,9 +1,8 @@
-use chrono::{DateTime, FixedOffset, NaiveDate, NaiveTime};
-use log::debug;
+use chrono::{DateTime, FixedOffset, NaiveDate};
 use models::{
     calendar::Calendar,
     departure::{Departure, DeparturePattern},
-    id::{RideId, StationId, ID},
+    id::{StationId, ID},
     response::{station::ResStation, transfar::ResTransfar},
     ride::Ride,
     station::Station,
