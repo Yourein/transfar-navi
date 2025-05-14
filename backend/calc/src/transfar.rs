@@ -254,6 +254,7 @@ pub fn build_departure_path(
     res
 }
 
+/// Vec<TransfarChain>のそれぞれから既に到達可能だった行き先 (逆方向に向かったときも含めて) をすべてVecにまとめて返す
 fn get_explored_stations(
     chain: &Vec<TransfarChain>
 ) -> Vec<StationId> {
