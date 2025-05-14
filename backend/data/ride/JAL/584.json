@@ -1,0 +1,14 @@
+{
+    "ride_id": "JAL_584",
+    "type": "JAL 584",
+    "aka_type": "",
+    "type_foreground": "#F0F0F0",
+    "type_background": "#C91412",
+    "type_pronounce": "にほんこうくう ごひゃくはちじゅうよん びん",
+    "to": "AP_RJTT",
+    "career_type": "AIRPLANE",
+    "route": [
+        "AP_RJCH",
+        "AP_RJTT"
+    ]
+}

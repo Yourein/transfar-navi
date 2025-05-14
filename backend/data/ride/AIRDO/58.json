@@ -1,0 +1,14 @@
+{
+    "ride_id": "AIRDO_58",
+    "type": "AIRDO 58",
+    "aka_type": "ANA 4758",
+    "type_foreground": "#62B1DF",
+    "type_background": "#FFF265",
+    "type_pronounce": "えあどぅ ごじゅうはち びん",
+    "to": "AP_RJTT",
+    "career_type": "AIRPLANE",
+    "route": [
+        "AP_RJCH",
+        "AP_RJTT"
+    ]
+}

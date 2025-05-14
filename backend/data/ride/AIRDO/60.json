@@ -1,0 +1,14 @@
+{
+    "ride_id": "AIRDO_60",
+    "type": "AIRDO 60",
+    "aka_type": "ANA 4760",
+    "type_foreground": "#62B1DF",
+    "type_background": "#FFF265",
+    "type_pronounce": "えあどぅ ろくじゅう びん",
+    "to": "AP_RJTT",
+    "career_type": "AIRPLANE",
+    "route": [
+        "AP_RJCH",
+        "AP_RJTT"
+    ]
+}

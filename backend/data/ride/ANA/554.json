@@ -1,0 +1,14 @@
+{
+    "ride_id": "ANA_554",
+    "type": "ANA 554",
+    "aka_type": "",
+    "type_foreground": "#F0F0F0",
+    "type_background": "#233F9A",
+    "type_pronounce": "えいえぬえー ごひゃくごじゅうよん びん",
+    "to": "AP_RJTT",
+    "career_type": "AIRPLANE",
+    "route": [
+        "AP_RJCH",
+        "AP_RJTT"
+    ]
+}

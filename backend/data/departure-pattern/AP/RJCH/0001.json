@@ -8,6 +8,36 @@
             "departure_type": "outgoing"
         },
         {
+            "ride_id": "AIRDO_58",
+            "trip_id": "AIRDO_58",
+            "time": "9:10",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JAL_584",
+            "trip_id": "JAL_584",
+            "time": "9:45",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "ANA_554",
+            "trip_id": "ANA_554",
+            "time": "11:50",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JAL_586",
+            "trip_id": "JAL_586",
+            "time": "15:05",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "ANA_556",
+            "trip_id": "ANA_556",
+            "time": "15:10",
+            "departure_type": "outgoing"
+        },
+        {
             "ride_id": "JAL_2748",
             "trip_id": "JAL_2748",
             "time": "14:00",
@@ -16,7 +46,31 @@
         {
             "ride_id": "JAL_2752",
             "trip_id": "JAL_2752",
-            "time": "16:30",
+            "time": "15:55",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "AIRDO_58",
+            "trip_id": "AIRDO_58",
+            "time": "16:45",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JAL_2754",
+            "trip_id": "JAL_2754",
+            "time": "19:15",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "ANA_558",
+            "trip_id": "ANA_558",
+            "time": "19:30",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JAL_588",
+            "trip_id": "JAL_588",
+            "time": "19:30",
             "departure_type": "outgoing"
         }
     ]
