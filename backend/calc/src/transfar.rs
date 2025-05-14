@@ -238,13 +238,19 @@ pub fn build_departure_path(
                         continue;
                     };
 
+                    let transfar_time = (target.time-arrive.time).num_minutes();
+                    // 乗り換え時間が長過ぎる or 短すぎる場合は除く
+                    if !is_acceptable_transfar_time(&ride.career_type, &target_ride.career_type, transfar_time) {
+                        continue;
+                    }
+
                     let mut next = chain.clone();
                     ride_id_memo.insert(target.ride_id.get_raw_id().clone());
                     next.push(TransfarChain {
                         departure: target.clone(),
                         ride_at: station.clone(),
                         ride_for: valid_destinations.last().unwrap().to_owned(),
-                        transfar_time: (target.time-arrive.time).num_minutes(),
+                        transfar_time: transfar_time,
                     });
                     stack.push_back(next);
                 }
@@ -252,6 +258,28 @@ pub fn build_departure_path(
         }
     }
     res
+}
+
+fn is_acceptable_transfar_time(
+    from_type: &str,
+    to_type: &str,
+    transfar_time: i64,
+) -> bool {
+    if from_type == "BUS" && to_type == "BUS" {
+        // バス→バス: 0分以上150分以下までを許容
+        0 <= transfar_time && transfar_time <= 150
+    }
+    else if from_type == "BUS" && to_type == "AIRPLANE" {
+        // バス→飛行機: 20分以上240分以下までを許容
+        20 <= transfar_time && transfar_time <= 240
+    }
+    else if from_type == "AIRPLANE" && to_type == "AIRPLANE" {
+        // 飛行機→飛行機: トランジットの可能性を考え、0分以上なら全て許容
+        0 <= transfar_time
+    }
+    else {
+        0 <= transfar_time
+    }
 }
 
 /// Vec<TransfarChain>のそれぞれから既に到達可能だった行き先 (逆方向に向かったときも含めて) をすべてVecにまとめて返す
