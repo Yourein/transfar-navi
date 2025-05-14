@@ -10,7 +10,7 @@ use crate::v1::health::v1_health;
 async fn main() -> std::io::Result<()> {
     // Safety: Run this app on appropriate environment
     unsafe {
-        std::env::set_var("RUST_LOG", "info");
+        std::env::set_var("RUST_LOG", "debug");
         std::env::set_var("RUST_BACKTRACE", "1");
     }
     env_logger::init();

@@ -70,6 +70,7 @@ mod tests {
                     trip_id: "trip_id".to_string(),
                     time: "00:00".to_string(),
                     loop_count: None,
+                    departure_type: Some("both".to_string())
                 }
             ].to_vec()
         };
@@ -165,6 +166,7 @@ mod tests {
                     trip_id: "trip_id".to_string(),
                     time: NaiveTime::from_hms_opt(00, 00, 00).expect("Valid Time"),
                     loop_count: 1,
+                    departure_type: "Both".to_string()
                 }
             ].to_vec()
         };

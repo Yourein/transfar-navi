@@ -43,17 +43,20 @@ pub struct Departure {
     pub trip_id: String,
     pub time: NaiveTime,
     pub loop_count: i32,
+    pub departure_type: String,
 }
 
 impl Departure {
     pub(crate) fn from_raw(raw: RawDeparture) -> Result<Self, chrono::ParseError> {
         let time = NaiveTime::parse_from_str(&raw.time, "%H:%M")?;
         let loop_count = raw.loop_count.to_owned().unwrap_or(1);
+        let departure_type = raw.departure_type.to_owned().unwrap_or("both".to_string());
         Ok(Departure {
             ride_id: RideId::new(raw.ride_id),
             trip_id: raw.trip_id,
             time: time,
             loop_count: loop_count,
+            departure_type: departure_type
         })
     }
 }
@@ -70,4 +73,5 @@ pub(crate) struct RawDeparture {
     pub trip_id: String,
     pub time: String,
     pub loop_count: Option<i32>,
+    pub departure_type: Option<String>,
 }
