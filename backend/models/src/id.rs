@@ -1,3 +1,5 @@
+use crate::station::Station;
+
 pub const ROOT_PATH: &str = "/home/yourein/Codes/transfar-navi/backend/data";
 
 #[allow(dead_code)]
@@ -122,8 +124,15 @@ impl StationId {
         }
     }
 
+    #[allow(deprecated)]
     pub fn is_same_station(&self, other: &StationId) -> bool {
-        self.get_raw_id() == other.get_raw_id()
+        let actually_same = self.get_raw_id() == other.get_raw_id();
+        let other_station = Station::from_id(other.clone());
+        if other_station.is_err() {
+            actually_same
+        } else {
+            actually_same || other_station.unwrap().join.iter().find(|y| y.is_same_station(&self)).is_some()
+        }
     }
 }
 
