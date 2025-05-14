@@ -127,11 +127,15 @@ impl StationId {
     #[allow(deprecated)]
     pub fn is_same_station(&self, other: &StationId) -> bool {
         let actually_same = self.get_raw_id() == other.get_raw_id();
-        let other_station = Station::from_id(other.clone());
-        if other_station.is_err() {
-            actually_same
-        } else {
-            actually_same || other_station.unwrap().join.iter().find(|y| y.is_same_station(&self)).is_some()
+        if actually_same {
+            // すでに同じことが確定しているならearly returnする
+            return true;
+        }
+        match Station::from_id(other.clone()) {
+            Ok(other_station) => {
+                other_station.join.iter().find(|x| x.get_raw_id() == self.get_raw_id()).is_some()
+            },
+            Err(_) => false
         }
     }
 }
