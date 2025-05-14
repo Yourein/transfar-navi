@@ -23,6 +23,7 @@ pub struct TransfarChain {
     pub transfar_time: i64,
 }
 
+/// ある駅であるDepartureを選んだ際に可能な乗り継ぎを列挙する
 pub(crate) fn calc_transfars(
     departure: &Departure,
     start: &Station,
@@ -106,6 +107,8 @@ fn get_transfarable_departures(
         .collect()
 }
 
+/// ある駅のDepartureをjoinしている駅も含めてすべて取得する
+/// 結果は時刻順にソートされている
 fn get_departures_from_station_id(
     id: &StationId,
     today: NaiveDate,
@@ -221,11 +224,11 @@ pub fn build_departure_path(
                 if target.ride_id != arrive.ride_id && !ride_id_memo.contains(&target.ride_id.get_raw_id()) {
                     let explored_stations = get_explored_stations(&chain);
                     let Ok(target_ride) = Ride::from_id(target.ride_id.get_raw_id()) else { continue; };
-                    debug!("target: {:?}, target_original_route: {:?}", target_ride, target_ride.route);
+                    // debug!("target: {:?}, target_original_route: {:?}", target_ride, target_ride.route);
                     let target_route = calc_stop_after(target_ride.route, &station, target.loop_count)
                         .into_iter()
                         .collect::<Vec<_>>();
-                    debug!("explored_stations: {:?}\ntarget_route: {:?}", explored_stations, target_route);
+                    // debug!("explored_stations: {:?}\ntarget_route: {:?}", explored_stations, target_route);
                     let Some(valid_destinations) = find_valid_transfar_route(
                         explored_stations,
                         target_route,
@@ -250,50 +253,6 @@ pub fn build_departure_path(
         }
     }
     res
-}
-
-fn find_valid_transfar(
-    cur_station: &StationId,
-    transfar_from: &Departure,
-    // cur_ride: &Ride,
-    today: NaiveDate, // todo: naivedate zl current datetime.
-    station_repository: &dyn StationRepository,
-) -> Vec<Vec<ResTransfar>> {
-    let departure_pattern = get_departures_from_station_id(cur_station, today.clone(), station_repository);
-    if departure_pattern.is_err() {
-        return vec![];
-    }
-    let mut departures = departure_pattern.unwrap();
-    departures.sort_by_key(|x| x.time);
-
-    let depart_after_inclusive = get_transfarable_departures(departures, transfar_from);
-    let arrive = depart_after_inclusive.first().unwrap().to_owned();
-
-    for departure in depart_after_inclusive {
-        // let transfar_route
-    }
-
-    // depart_after_inclusive
-    //     .into_iter()
-    //     .skip(1)
-    //     .filter_map(|x| {
-    //         // fixme: ここどうにかしたい
-    //         let Ok(target_ride) = Ride::from_id(x.ride_id.get_raw_id()) else {
-    //             return None;
-    //         };
-    //         calc_transfar(
-    //             cur_ride,
-    //             &arrive,
-    //             cur_station,
-    //             &x,
-    //             &target_ride,
-    //             station_repository,
-    //         )
-    //         .ok()
-    //     })
-    //     .map(|x| vec![x])
-    //     .collect::<_>()
-    todo!()
 }
 
 fn get_explored_stations(
@@ -328,67 +287,10 @@ fn find_valid_transfar_route(
     }
 }
 
-fn is_valid_transfar(
-    trip_route: Vec<StationId>,
-    target_departure: &Departure,
-    target_ride: &Ride,
-    transfar_at: &StationId,
-) -> Result<StationId, Box<dyn Error + Send + Sync + 'static>> {
-    let target_route = target_ride.route.clone();
-    let valid_destinations: Vec<StationId> =
-        calc_stop_after(target_route, transfar_at, target_departure.loop_count)
-            .into_iter()
-            .skip_while(|x| x.is_same_station(&transfar_at))
-            .take_while(|x| trip_route.iter().find(|y| y.is_same_station(x)) == None)
-            .collect();
-
-    if valid_destinations.is_empty() {
-        return Err("Invalid.".into());
-    }
-    Ok(valid_destinations.last().unwrap().to_owned())
-}
-
-/// 2つのdepartureを対象にtransfar_fromからtarget_departureに乗り継ぐことが有効化を判定する
-/// 無効な乗り換えの場合はErrが返る。
-/// 0分乗り換えは許容しているので、フロント側で出さないようにするか、警告文を出すなどで対応する。
-fn calc_transfar(
-    trip_route: Vec<StationId>,
-    arrival_time: &NaiveTime,
-    transfar_at: &StationId,
-    target_departure: &Departure,
-    target_ride: &Ride,
-    station_repository: &dyn StationRepository,
-) -> Result<ResTransfar, Box<dyn Error + Send + Sync + 'static>> {
-    // 認められた乗り換え
-    // - 全く行き先が違うやつ
-    // - 戻らない
-    // - 行き先は同じだけれども今の便が通らない駅に停まるやつ
-    //   - ただし、次に合流する前の駅に向かうことにする
-    let transfar_to = is_valid_transfar(trip_route, target_departure, target_ride, transfar_at)?.to_owned();
-
-    let transfar_station = station_repository.from_id(transfar_at.clone())?;
-    // let transfar_to_id = valid_destinations.last().unwrap().to_owned();
-    let transfar_to = station_repository.from_id(transfar_to)?;
-    let transfar_time = (target_departure.time - arrival_time.to_owned()).num_minutes();
-    if transfar_time < 0 {
-        return Err("There are no time to change.".into());
-    }
-    Ok(ResTransfar {
-        ride_type: target_ride.ride_type.clone(),
-        type_foreground: target_ride.type_foreground.clone(),
-        type_background: target_ride.type_background.clone(),
-        at: transfar_station.into(),
-        to: transfar_to.into(),
-        career_type: target_ride.career_type.clone(),
-        depart_at: target_departure.time.format("%H:%M").to_string(),
-        transfar_time: transfar_time,
-    })
-}
-
 #[allow(non_snake_case)]
 #[cfg(test)]
 mod test {
-    use super::{calc_stop_after, calc_transfar, find_valid_transfar, find_valid_transfar_route, get_transfarable_departures};
+    use super::{calc_stop_after, find_valid_transfar_route, get_transfarable_departures};
     use chrono::NaiveTime;
     use models::departure::Departure;
     use models::id::{ID, RideId, StationId};
