@@ -1,0 +1,9 @@
+{
+    "station_id": "HAKODATEBUS_050016",
+    "versions": [
+        {
+            "calendar_id": "HAKODATEBUS_050016_0001",
+            "valid_until": "2025/10/01"
+        }
+    ]
+}

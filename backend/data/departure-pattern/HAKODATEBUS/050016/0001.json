@@ -1,0 +1,75 @@
+{
+    "pattern_id": "HAKODATEBUS_050019_0001",
+    "departures": [
+        {
+            "ride_id": "HAKODATEBUS_55A-U",
+            "trip_id": "HAKODATEBUS_55A-U-0912",
+            "time": "9:17"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-0959",
+            "time": "10:04"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-1048",
+            "time": "10:53"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-1249",
+            "time": "12:54"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-1341",
+            "time": "13:46"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-1440",
+            "time": "14:45"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-1617",
+            "time": "16:22"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55A-U",
+            "trip_id": "HAKODATEBUS_55A-U-1643",
+            "time": "16:48"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-1704",
+            "time": "17:09"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55A-U",
+            "trip_id": "HAKODATEBUS_55A-U-1736",
+            "time": "17:41"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55A-U",
+            "trip_id": "HAKODATEBUS_55A-U-1842",
+            "time": "18:47"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-1900",
+            "time": "19:05"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-1950",
+            "time": "19:55"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55G-U",
+            "trip_id": "HAKODATEBUS_55G-U-2057",
+            "time": "21:01"
+        }
+    ]
+}
