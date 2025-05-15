@@ -1,13 +1,16 @@
 package net.yourein.transfarnavi.models
 
-// todo: JSONと命名規則が違うのでrenameを忘れないようにする
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Transfer(
-    val rideType: String,
-    val typeForeground: String,
-    val typeBackground: String,
+    @SerialName("ride_type") val rideType: String,
+    @SerialName("type_foreground") val typeForeground: String,
+    @SerialName("type_background") val typeBackground: String,
     val at: Station,
     val to: Station,
-    val careerType: String,
-    val departAt: String, // hh:mm
-    val transferTime: Int,
+    @SerialName("career_type") val careerType: String,
+    @SerialName("depart_at") val departAt: String, // hh:mm
+    @SerialName("transfar_time") val transferTime: Int,
 )
