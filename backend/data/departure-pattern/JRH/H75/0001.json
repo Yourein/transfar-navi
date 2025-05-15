@@ -1,0 +1,71 @@
+{
+    "pattern_id": "JRH_H75_0001",
+    "departures": [
+        {
+            "ride_id": "JRH_HOKUTO_01",
+            "trip_id": "JRH_HOKUTO_01",
+            "time": "6:02",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_03",
+            "trip_id": "JRH_HOKUTO_03",
+            "time": "7:37",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_05",
+            "trip_id": "JRH_HOKUTO_05",
+            "time": "8:56",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_07",
+            "trip_id": "JRH_HOKUTO_07",
+            "time": "10:05",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_09",
+            "trip_id": "JRH_HOKUTO_09",
+            "time": "10:45",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_11",
+            "trip_id": "JRH_HOKUTO_11",
+            "time": "12:15",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_13",
+            "trip_id": "JRH_HOKUTO_13",
+            "time": "13:31",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_15",
+            "trip_id": "JRH_HOKUTO_15",
+            "time": "15:01",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_17",
+            "trip_id": "JRH_HOKUTO_17",
+            "time": "16:40",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_19",
+            "trip_id": "JRH_HOKUTO_19",
+            "time": "17:55",
+            "departure_type": "outgoing"
+        },
+        {
+            "ride_id": "JRH_HOKUTO_21",
+            "trip_id": "JRH_HOKUTO_21",
+            "time": "18:43",
+            "departure_type": "outgoing"
+        }
+    ]
+}

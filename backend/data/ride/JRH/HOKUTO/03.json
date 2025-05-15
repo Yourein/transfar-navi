@@ -1,0 +1,27 @@
+{
+    "ride_id": "JRH_HOKUTO_03",
+    "type": "北斗 3号",
+    "aka_type": "",
+    "type_foreground": "#E00000",
+    "type_background": "#0A0A0A",
+    "type_pronounce": "とくべつきゅうこう ほくと さん ごう",
+    "to": "JRH_H01",
+    "career_type": "LTDEXPTRAIN",
+    "route": [
+        "JRH_H75",
+        "JRH_H74",
+        "JRH_H70",
+        "JRH_H62",
+        "JRH_H54",
+        "JRH_H47",
+        "JRH_H41",
+        "JRH_H38",
+        "JRH_H32",
+        "JRH_H28",
+        "JRH_H23",
+        "JRH_H18",
+        "JRH_H14",
+        "JRH_H05",
+        "JRH_H01"
+    ]
+}
