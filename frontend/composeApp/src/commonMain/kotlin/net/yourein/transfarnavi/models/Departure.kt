@@ -1,4 +1,4 @@
-package net.yourein.models
+package net.yourein.transfarnavi.models
 
 // todo: JSONの命名規則が違うのでrenameを忘れないこと
 data class Departure(

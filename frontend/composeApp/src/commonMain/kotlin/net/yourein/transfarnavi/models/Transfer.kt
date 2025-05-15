@@ -1,4 +1,4 @@
-package net.yourein.models
+package net.yourein.transfarnavi.models
 
 // todo: JSONと命名規則が違うのでrenameを忘れないようにする
 data class Transfer(
