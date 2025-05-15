@@ -33,3 +33,4 @@ plugins {
 }
 
 include(":composeApp")
+include(":composeApp:models")

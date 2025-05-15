@@ -1,3 +1,7 @@
 backend/target
 backend/data/original
 backend/data/*.csv
+frontend/.idea
+frontend/.kotlin
+frontend/.gradle
+frontend/**/build/
