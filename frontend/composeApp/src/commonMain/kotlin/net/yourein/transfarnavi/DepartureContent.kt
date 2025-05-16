@@ -119,19 +119,11 @@ private fun NormalDepartureContent(
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val typeBackground = "FF" + departure.typeBackground.removePrefix("#")
-        val backgroundColor = Color(typeBackground.lowercase().toLong(16))
-        val typeForeground = "FF" + departure.typeForeground.removePrefix("#")
-        val textColor = Color(typeForeground.toLong(16))
-        Text(
-            text = departure.rideType,
-            color = textColor,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(backgroundColor)
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+        TypeChip(
+            rawTypeForeground = departure.typeForeground,
+            rawTypeBackground = departure.typeBackground,
+            typeName = departure.rideType,
+            akaType = null,
         )
 
         Spacer(modifier = Modifier.size(8.dp))
