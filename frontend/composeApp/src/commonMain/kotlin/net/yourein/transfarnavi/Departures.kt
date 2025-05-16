@@ -1,5 +1,8 @@
 package net.yourein.transfarnavi
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +30,15 @@ internal fun DepartureList(
                 index = index,
                 currentTime = currentTime,
             )
+
+            if (departure.transfers.isNotEmpty()) {
+                Spacer(modifier = Modifier.size(8.dp))
+                Transfers(
+                    chains = departure.transfers,
+                    modifier = Modifier.padding(start = 80.dp)
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+            }
 
             if (index != departures.lastIndex) {
                 HorizontalDivider(

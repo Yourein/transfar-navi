@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import kotlinx.datetime.LocalTime
 import net.yourein.transfarnavi.models.Departure
 import net.yourein.transfarnavi.models.Station
+import net.yourein.transfarnavi.models.Transfer
 import net.yourein.transfarnavi.theme.NaviTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -52,7 +53,64 @@ private fun DepartureContentTest() {
                 ),
                 careerType = "BUS",
                 departAt = "11:02",
-                transfers = listOf()
+                transfers = listOf(
+                    listOf(
+                        Transfer(
+                            rideType = "55G",
+                            typeForeground = "#FFD700",
+                            typeBackground = "#000000",
+                            at = Station(
+                                id = "HAKODATEBUS_050004",
+                                name = "亀田中学校前",
+                                pronounce = "かめだちゅうがっこうまえ",
+                            ),
+                            to = Station(
+                                id = "HAKODATEBUS_050019",
+                                name = "赤川",
+                                pronounce = "あかがわ",
+                            ),
+                            careerType = "BUS",
+                            departAt = "11:02",
+                            transferTime = 0,
+                        ),
+                        Transfer(
+                            rideType = "7F",
+                            typeForeground = "#FFD700",
+                            typeBackground = "#000000",
+                            at = Station(
+                                id = "HAKODATEBUS_050005",
+                                name = "亀田支所前",
+                                pronounce = "かめだししょまえ",
+                            ),
+                            to = Station(
+                                id = "HAKODATEBUS_030001",
+                                name = "函館空港",
+                                pronounce = "はこだてくうこう",
+                            ),
+                            careerType = "BUS",
+                            departAt = "11:46",
+                            transferTime = 46,
+                        ),
+                        Transfer(
+                            rideType = "JAL 2748",
+                            typeForeground = "#F0F0F0",
+                            typeBackground = "#C91412",
+                            at = Station(
+                                id = "HAKODATEBUS_030001",
+                                name = "函館空港",
+                                pronounce = "はこだてくうこう",
+                            ),
+                            to = Station(
+                                id = "AP_RJCO",
+                                name = "丘珠空港",
+                                pronounce = "おかだまくうこう"
+                            ),
+                            careerType = "AIRPLANE",
+                            departAt = "14:00",
+                            transferTime = 133,
+                        ),
+                    )
+                )
             ),
             Departure(
                 rideType = "JAL 584",
