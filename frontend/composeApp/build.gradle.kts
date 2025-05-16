@@ -38,11 +38,13 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.ktor.client.core)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.okhttp)
             implementation(libs.ktor.serialization.kotlinx.json)
         }
         commonTest.dependencies {

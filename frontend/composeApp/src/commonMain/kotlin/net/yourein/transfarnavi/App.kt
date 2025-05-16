@@ -2,35 +2,82 @@ package net.yourein.transfarnavi
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import net.yourein.transfarnavi.models.Departure
 import net.yourein.transfarnavi.models.Station
 import net.yourein.transfarnavi.models.Transfer
+import net.yourein.transfarnavi.repositories.implementations.TransferRepositoryImpl
 import net.yourein.transfarnavi.theme.NaviTheme
+import net.yourein.transfarnavi.utils.LoadState
+import net.yourein.transfarnavi.viewmodels.TransferViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
-fun App() {
+fun App(
+    viewModel: TransferViewModel = viewModel { TransferViewModel(TransferRepositoryImpl()) },
+) {
     NaviTheme {
+        LaunchedEffect(Unit) {
+            viewModel.loadDepartures("HAKODATEBUS_050004")
+        }
+        val state = viewModel.departureState
         Scaffold(
             topBar = {
                 TransferNaviTopBar(
-                    stationName = "亀田支所前",
-                    onRefreshButtonClick = {},
+                    stationName = "",
+                    onRefreshButtonClick = {
+                        viewModel.loadDepartures("HAKODATEBUS_050004")
+                    },
                     onChangeStationButtonClick = {}
                 )
             }
         ) { innerPadding ->
-            Box(
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                DepartureContentTest()
+            when (state) {
+                is LoadState.Loading -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is LoadState.Error -> {
+                    Box(
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        val e = state.throwable.message
+                        Text(text = "${e}")
+                    }
+                }
+
+                is LoadState.Success -> {
+                    val currentTime = Clock.System.now()
+                        .toLocalDateTime(TimeZone.currentSystemDefault())
+                        .time
+                    DepartureList(
+                        departures = state.value.departures,
+                        currentTime = currentTime,
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
         }
     }
