@@ -82,7 +82,7 @@ private fun NextDepartureContent(
                 text = departure.rideType,
                 color = textColor,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
+                fontSize = 28.sp,
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
                     .background(backgroundColor)
