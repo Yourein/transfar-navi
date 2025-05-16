@@ -29,13 +29,17 @@ pub fn get_departures(raw_station_id: &str, datetime: DateTime<FixedOffset>) -> 
     let mut departure_pattern = DeparturePattern::from_id(pattern_id)?;
     departure_pattern.departures.sort_by(|x, y| x.time.cmp(&y.time));
     
+    // 出発が近いうちから最大6つ取得
+    let rideable_departures = departure_pattern
+        .departures
+        .into_iter()
+        .filter(|x| x.time.signed_duration_since(datetime.time()) >= TimeDelta::zero())
+        .take(6)
+        .collect::<Vec<_>>();
+    
     let mut res_departures: Vec<ResDeparture> = Vec::new();
     let mut ride_cache: HashMap<String, Ride> = HashMap::new();
-    for departure in departure_pattern.departures {
-        if departure.time.signed_duration_since(datetime.time()) < TimeDelta::zero() {
-            continue
-        }
-
+    for departure in rideable_departures {
         let ride: Ride = if ride_cache.contains_key(&departure.ride_id.get_raw_id()) {
             ride_cache.get(&departure.ride_id.get_raw_id()).unwrap().to_owned()
         } else {
