@@ -5,3 +5,4 @@ frontend/.idea
 frontend/.kotlin
 frontend/.gradle
 frontend/**/build/
+**/.DS_store
