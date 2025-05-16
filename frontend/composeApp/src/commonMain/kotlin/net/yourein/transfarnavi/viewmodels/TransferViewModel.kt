@@ -15,16 +15,22 @@ class TransferViewModel(
 ) : ViewModel() {
     var departureState: LoadState<Departures> by mutableStateOf(LoadState.Loading(null))
         private set
+    private var currentStationId: String = "HAKODATEBUS_050004"
 
-    fun loadDepartures(stationId: String) {
+    fun loadDepartures() {
         viewModelScope.launch {
             departureState = LoadState.Loading(departureState.value)
             try {
-                val departures = transferRepository.getDepartures(stationId)
+                val departures = transferRepository.getDepartures(currentStationId)
                 departureState = LoadState.Success(departures)
             } catch (e: Exception) {
                 departureState = LoadState.Error(departureState.value, e)
             }
         }
+    }
+
+    fun setNewStationId(stationId: String) {
+        currentStationId = stationId
+        loadDepartures()
     }
 }
