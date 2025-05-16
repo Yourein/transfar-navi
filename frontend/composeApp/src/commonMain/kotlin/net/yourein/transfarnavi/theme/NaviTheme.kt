@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val colorTextPrimary = Color(0xFFF0F0F0)
+val colorDivider = Color(0xFF79747E)
 
 private val colorScheme: ColorScheme
     @Composable get() =  MaterialTheme.colorScheme.copy(
