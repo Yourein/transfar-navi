@@ -77,7 +77,7 @@ private fun TransferLine(
                     strokeWidth = 2f,
                 )
             }
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = 16.dp)
     )
 }
 
@@ -90,7 +90,7 @@ private fun TransferChip(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .border(border = BorderStroke(1.dp, colorTextPrimary), RoundedCornerShape(4.dp))
-            .padding(4.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         TypeChip(
             rawTypeForeground = transfer.typeForeground,
