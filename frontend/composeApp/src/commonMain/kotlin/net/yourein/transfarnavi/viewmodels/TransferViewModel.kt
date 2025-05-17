@@ -15,7 +15,8 @@ class TransferViewModel(
 ) : ViewModel() {
     var departureState: LoadState<Departures> by mutableStateOf(LoadState.Loading(null))
         private set
-    private var currentStationId: String = "HAKODATEBUS_050004"
+    var currentStationId: String = "HAKODATEBUS_050004"
+        private set
 
     fun loadDepartures() {
         viewModelScope.launch {

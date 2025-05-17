@@ -43,7 +43,7 @@ fun App(
         Scaffold(
             topBar = {
                 TransferNaviTopBar(
-                    stationName = "",
+                    stationName = viewModel.currentStationId,
                     onRefreshButtonClick = {
                         viewModel.loadDepartures()
                     },
