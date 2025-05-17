@@ -1,0 +1,29 @@
+{
+    "pattern_id": "HAKODATEBUS_020010_0001",
+    "departures": [
+        {
+            "ride_id": "HAKODATEBUS_55A-U",
+            "trip_id": "HAKODATEBUS_55A-U-0912",
+            "time": "10:04",
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55A-U",
+            "trip_id": "HAKODATEBUS_55A-U-1643",
+            "time": "17:35",
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55A-U",
+            "trip_id": "HAKODATEBUS_55A-U-1736",
+            "time": "18:28",
+            "departure_type": "incoming"
+        },
+        {
+            "ride_id": "HAKODATEBUS_55A-U",
+            "trip_id": "HAKODATEBUS_55A-U-1842",
+            "time": "19:31",
+            "departure_type": "incoming"
+        }
+    ]
+}
