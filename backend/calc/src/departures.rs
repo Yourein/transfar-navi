@@ -34,6 +34,7 @@ pub fn get_departures(raw_station_id: &str, datetime: DateTime<FixedOffset>) -> 
         .departures
         .into_iter()
         .filter(|x| x.time.signed_duration_since(datetime.time()) >= TimeDelta::zero())
+        .filter(|x| x.departure_type == "both" || x.departure_type == "outgoing")
         .take(6)
         .collect::<Vec<_>>();
     
