@@ -273,6 +273,9 @@ fn is_acceptable_transfar_time(
         // バス→飛行機: 30分以上240分以下までを許容
         30 <= transfar_time && transfar_time <= 240
     }
+    else if from_type == "BUS" && to_type == "LTDEXPTRAIN" {
+        10 <= transfar_time && transfar_time <= 120
+    }
     else if from_type == "AIRPLANE" && to_type == "AIRPLANE" {
         // 飛行機→飛行機: トランジットの可能性を考え、0分以上なら全て許容
         0 <= transfar_time
